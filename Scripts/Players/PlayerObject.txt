@@ -44,10 +44,18 @@ private alias 6 : PRIORITY_BOUNDS_SMALL   // Object updates within 32 pixels of 
 private alias 7 : PRIORITY_ACTIVE_SMALL   // Object will always update, unless paused/frozen. The bounds ofobject.outOfBounds are much smaller
 
 // Player List Pos Aliases
-public alias 0 : PLAYER_SONIC
-public alias 1 : PLAYER_TAILS
-public alias 2 : PLAYER_KNUCKLES
-public alias 3 : PLAYER_SONIC_TAILS
+public alias 0 : PLAYER_SONIC_TAILS
+public alias 1 : PLAYER_SONIC
+public alias 2 : PLAYER_TAILS
+public alias 3 : PLAYER_KNUCKLES
+
+// Animation Aliases
+public alias 44 : ANI_GLIDING
+public alias 45 : ANI_GLIDE_DROP
+public alias 46 : ANI_CLIMBING
+public alias 47 : ANI_LEDGE_PULLUP
+public alias 48 : ANI_DROPDASH
+
 
 //Variables
 private alias object.type : player.type
@@ -163,6 +171,23 @@ reserve function Player_State_HangBar // Function28
 reserve function Player_State_TubeRoll // Function35
 reserve function Player_State_SpinningTop // Function36
 reserve function Player_State_WaterCurrent // Function39
+reserve function Player_Action_Glide
+reserve function Player_State_Glide
+reserve function Player_State_GlideDrop
+reserve function Player_State_Climb
+reserve function Player_State_LedgePullUp
+reserve function Player_State_Carried
+reserve function Player_Sidekick_UpdateAI
+reserve function Player_Action_DropDash
+reserve function Player_Action_Glide
+reserve function Player_State_Glide
+reserve function Player_State_GlideDrop
+reserve function Player_State_Climb
+reserve function Player_State_LedgePullUp
+reserve function Player_State_Carried
+reserve function Player_Sidekick_UpdateAI
+reserve function Player_Action_DropDash
+
 reserve function Player_State_Ramp3D // Transplanted
 reserve function Player_State_Hugged // Transplanted
 reserve function Player_State_SizeChange // Function40
@@ -184,6 +209,40 @@ reserve function Player_Action_DblJumpSonic // T_Function51
 reserve function Player_State_TubeAirRoll // // T_Function52
 
 // Static Values
+
+// Physics Tables
+private table Player_SonicPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+end table
+
+private table Player_TailsPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+end table
+
+private table Player_KnucklesPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x60000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x30000, -0x20000
+end table
+
+
+// Physics Tables
+private table Player_SonicPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+end table
+
+private table Player_TailsPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+end table
+
+private table Player_KnucklesPhysicsTable
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x60000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x30000, -0x20000
+end table
+
 public value Mini_PlayerFlag = 0;
 public value Player_attractTable = 0;
 public value Player_attractTablePos = 0;
@@ -288,62 +347,48 @@ end function
 
 
 public function Player_UpdatePhysicsState
-	switch stage.playerListPos
-	case PLAYER_SONIC
-	case PLAYER_SONIC_TAILS // Omg, Sonic and Tails!!!
-		temp0 = Player_SonicPhysicsTable
-		break
-	case PLAYER_TAILS
-		temp0 = Player_TailsPhysicsTable
-		break
+	switch player[currentPlayer].character
+	case 0: temp0 = 0; break
+	case 1: temp0 = 0; break
+	case 2: temp0 = 1; break
+	case 3: temp0 = 2; break
 	end switch
 
 	temp1 = 0
-	temp2 = 0
-
-	if stage.state != STAGE_FROZEN
-		// Is the player underwater?
-		temp3 = player[currentPlayer].ypos
-		temp3 >>= 16
-
-		// Pairing the water & Debug Mode checks together
-		CheckGreater(temp3, stage.waterLevel)
-		temp4 = checkResult
-		CheckNotEqual(player[currentPlayer].type, TypeName[Debug Mode])
-		temp4 &= checkResult
-		if temp4 == true
-			SetBit(temp1, 0, true)
-			player[currentPlayer].gravityStrength = 0x1000
-		else
-			player[currentPlayer].gravityStrength = 0x3800
-		end if
-		if player[currentPlayer].speedShoesTimer > 0
-			SetBit(temp1, 2, true)
-			temp2 = 1
-		end if
-
-		temp1 <<= 3
+	if player[currentPlayer].ypos > stage.waterLevel
+		temp1 = 8
+		player[currentPlayer].gravityStrength = 0x1000
+	else
+		player[currentPlayer].gravityStrength = 0x3800
 	end if
 
-	GetTableValue(player[currentPlayer].topSpeed, temp1, temp0)
+	switch temp0
+	case 0: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_SonicPhysicsTable); break
+	case 1: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_TailsPhysicsTable); break
+	case 2: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_KnucklesPhysicsTable); break
+	end switch
 	temp1++
-	GetTableValue(player[currentPlayer].acceleration, temp1, temp0)
+	switch temp0
+	case 0: GetTableValue(player[currentPlayer].acceleration, temp1, Player_SonicPhysicsTable); break
+	case 1: GetTableValue(player[currentPlayer].acceleration, temp1, Player_TailsPhysicsTable); break
+	case 2: GetTableValue(player[currentPlayer].acceleration, temp1, Player_KnucklesPhysicsTable); break
+	end switch
 	player[currentPlayer].deceleration = player[currentPlayer].acceleration
-	player[currentPlayer].deceleration >>= temp2
+	temp1 += 5
+	switch temp0
+	case 0: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_SonicPhysicsTable); break
+	case 1: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_TailsPhysicsTable); break
+	case 2: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_KnucklesPhysicsTable); break
+	end switch
 	temp1++
-	GetTableValue(player[currentPlayer].airAcceleration, temp1, temp0)
-	temp1++
-	GetTableValue(player[currentPlayer].airDeceleration, temp1, temp0)
-	temp1++
-	GetTableValue(player[currentPlayer].skidSpeed, temp1, temp0)
-	temp1++
-	GetTableValue(player[currentPlayer].rollingFriction, temp1, temp0)
-	temp1++
-	GetTableValue(player[currentPlayer].jumpStrength, temp1, temp0)
-	temp1++
-	GetTableValue(player[currentPlayer].jumpCap, temp1, temp0)
-	
+	switch temp0
+	case 0: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_SonicPhysicsTable); break
+	case 1: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_TailsPhysicsTable); break
+	case 2: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_KnucklesPhysicsTable); break
+	end switch
 end function
+
+
 
 // Used by badniks to check if the badnik should be destroyed
 // -> Not to be confused with Player_CheckHit
@@ -569,78 +614,38 @@ end function
 
 
 public function Player_ProcessUpdate
-	if options.attractMode == false
+	if player.isSidekick == true
+		CallFunction(Player_Sidekick_UpdateAI)
+	else
 		ProcessObjectControl()
-	end if
-
-	if player.speedShoesTimer > 0
-		player.speedShoesTimer--
-		if player.speedShoesTimer < 1
-			if music.currentTrack == 3
-				PlayMusic(0)
-			end if
-			currentPlayer = player.entityPos
-			CallFunction(Player_UpdatePhysicsState)
-			player.speedShoesTimer = 0
-		end if
-	end if
-	if player.state != Player_State_Hurt
-		if player.blinkTimer > 0
-			player.blinkTimer--
-			GetBit(temp0, player.blinkTimer, 2)
-			if temp0 == 1
-				player.visible = 0
-			else
-				player.visible = 1
+		if playerCount > 1
+			if player.state == Player_State_Air
+				if object[1].state == Player_State_Fly
+					if object[1].carrying == false
+						temp0 = player.xpos - object[1].xpos
+						Abs(temp0)
+						if temp0 < 0x100000
+							temp0 = player.ypos - object[1].ypos
+							Abs(temp0)
+							if temp0 < 0x180000
+								player.state = Player_State_Carried
+								object[1].carrying = true
+							end if
+						end if
+					end if
+				end if
 			end if
 		end if
-	end if
-	if player.invincibleTimer > 0
-		player.invincibleTimer--
-		if player.invincibleTimer == 0
-			if music.currentTrack == 2
-				PlayMusic(0)
-			end if
-			if object[+playerCount].type == invincibilityType
-				currentPlayer = player.entityPos
-				arrayPos0 = currentPlayer
-				arrayPos0 += playerCount
-				CallFunction(Player_ApplyShield)
-			end if
-		end if
-	end if
-	if player.state != Player_State_Lookup
-		if player.state != 18
-			if player.lookPosY > 0
-				player.lookPosY -= 2
-			end if
-			if player.lookPosY < 0
-				player.lookPosY += 2
-			end if
-		end if
-	end if
-	if object.value10 > 0
-		object.value10--
-		if object.value10 == 0
-			screen[0].cameraStyle = 0
-		end if
-	end if
-	if player.state != 23
-		if object.value25 != 0
-			StopSfx(SfxName[Flying])
-			StopSfx(SfxName[Tired])
-			object.value25 = 0
-		end if
-	end if
-	if warp.timer > 0
-		warp.timer++
-		if warp.timer == 204
-			screen[0].cameraEnabled = 0
-			CreateTempObject(TypeName[Time Warp], 0, 0, 0)
-			object[tempObjectPos].drawOrder = 6
+		if player.entityPos == 0
+			temp0 = saveRAM[1200]
+			saveRAM[1000 + temp0] = player.xpos
+			saveRAM[1100 + temp0] = player.ypos
+			saveRAM[1200] = (temp0 + 1) & 63
 		end if
 	end if
 end function
+
+
 
 
 public function Player_State_Static
@@ -2671,39 +2676,32 @@ event ObjectUpdate
 			end if
 		end if
 
-		if player.collisionDisabled == false
-			temp0 = player.prevGravity
-			player.prevGravity = player.gravity
-			ProcessObjectMovement()
-			player.prevGravity ^= GRAVITY_AIR
-			CheckEqual(player.gravity, 0)
-			player.prevGravity |= checkResult
-			player.prevGravity ^= GRAVITY_AIR
-
-			if temp0 == GRAVITY_AIR
-				if player.prevGravity == GRAVITY_GROUND
-				// in Sonic 1, achieveRingCount would also go here
-					player.badnikBonus = 0
-					if player.animation == ANI_JUMPING
-						if player.down == false
-							if player.state != Player_State_BubbleBounce
-								if player.state != Player_State_Roll
-									if player.state != Player_State_TubeRoll
-										player.animation = ANI_WALKING
-										if player.entityPos == screen[0].cameraTarget
-											screen[0].adjustCameraY = 0
-										end if
-										player.iypos += player.jumpOffset
-									end if
+								if player.collisionDisabled == false
+				temp0 = player.prevGravity
+				player.prevGravity = player.gravity
+				ProcessObjectMovement()
+				player.prevGravity ^= 1
+				CheckEqual(player.gravity, 0)
+				player.prevGravity |= checkResult
+				player.prevGravity ^= 1
+				if temp0 == 1
+					if player.prevGravity == 0
+						if player.animation == ANI_DROPDASH
+							player.state = Player_State_Roll; player.animation = 2
+							PlaySfx(SfxName[Release], 0)
+							player.speed = 0xC0000 if player.direction == 0 else -0xC0000
+							player.xvel = player.speed
+						else
+							if player.animation == 2
+								if player.down == false
+									player.animation = 1; player.iypos += player.jumpOffset
 								end if
 							end if
 						end if
 					end if
 				end if
+			else: player.collisionDisabled = false
 			end if
-		else
-			player.collisionDisabled = false
-		end if
 	end if
 end event
 
@@ -2722,83 +2720,72 @@ end event
 event ObjectStartup
 	playerCount = 0
 	foreach (TypeName[Player Object], arrayPos0, ALL_ENTITIES)
-		screen[0].cameraEnabled = true
-		screen[0].cameraStyle = options.originalControls
-		screen[0].cameraTarget = 0
-		currentPlayer = 0
-		
-		ResetObjectEntity(0, TypeName[Player Object], 0, object[arrayPos0].xpos, object[arrayPos0].ypos)
-		screen[0].cameraX = object[0].ixpos
-		screen[0].cameraY = object[0].iypos
-		object[0].groupID = GROUP_PLAYERS
-		player[0].state = Player_State_Air
-		player[0].priority = 1
-		player[0].drawOrder = 4
-		player[0].rollingDeceleration = 0x2000
-
-		// Hitbox values
-		object[0].value39 = C_BOX
-		object[0].value40 = C_BOX
-		object[0].value41 = C_BOX
-		object[0].value42 = C_BOX
-
-
-		switch stage.playerListPos
-		case PLAYER_SONIC
-			LoadAnimation("Sonic.ani")
-			player[0].character = PLAYER_SONIC
-			player[0].jumpOffset = -5
-			player[0].jumpAbility = Player_Action_DblJumpSonic
-
-			// Default Sonic's peelout to the S2 version
-			player[0].actionPeelout = Player_Action_Peelout_S2
-
-			// Then, set the correct peelout and spindash accordingly
-			if options.originalControls == false
-				player[0].actionPeelout = Player_Action_Peelout_S2
-				player[0].actionSpindash = Player_Action_Spindash_S2
-			else
-				player[0].actionPeelout = Player_Action_Peelout_CD
-				player[0].actionSpindash = Player_Action_Spindash_CD
+		if playerCount == 0
+			screen[0].cameraEnabled = true
+			screen[0].cameraStyle = options.originalControls
+			screen[0].cameraTarget = 0
+			currentPlayer = 0
+			ResetObjectEntity(0, TypeName[Player Object], 0, object[arrayPos0].xpos, object[arrayPos0].ypos)
+			screen[0].cameraX = object[0].ixpos
+			screen[0].cameraY = object[0].iypos
+			object[0].groupID = GROUP_PLAYERS
+			player[0].state = Player_State_Air
+			player[0].priority = 1
+			player[0].drawOrder = 4
+			switch stage.playerListPos
+			case 0 // Duo
+				LoadSpriteSheet("Players/Sonic1.gif")
+				LoadAnimation("Sonic.ani")
+				player[0].character = 0
+				player[0].jumpAbility = Player_Action_DblJumpSonic
+				playerCount = 2
+				ResetObjectEntity(1, TypeName[Player 2 Object], 0, object[0].xpos, object[0].ypos)
+				object[1].xpos -= 0x100000
+				object[1].groupID = GROUP_PLAYERS
+				player[1].character = 2
+				player[1].isSidekick = true
+				player[1].jumpAbility = Player_Action_DblJumpTails
+				saveRAM[1200] = 0
+				break
+			case 1 // Sonic
+				LoadSpriteSheet("Players/Sonic1.gif")
+				LoadAnimation("Sonic.ani")
+				player[0].character = 1
+				player[0].jumpAbility = Player_Action_DblJumpSonic
+				playerCount = 1
+				break
+			case 2 // Tails
+				player[0].character = 2
+				LoadSpriteSheet("Players/Tails1.gif")
+				LoadAnimation("Tails.ani")
+				player[0].jumpAbility = Player_Action_DblJumpTails
+				playerCount = 1
+				break
+			case 3 // Knuckles
+				player[0].character = 3
+				LoadSpriteSheet("Players/Knuckles1.gif")
+				LoadAnimation("Knuckles.ani")
+				player[0].jumpAbility = Player_Action_Glide
+				playerCount = 1
+				GetAnimationByName(ANI_GLIDING, "Gliding")
+				GetAnimationByName(ANI_GLIDE_DROP, "Glide Drop")
+				GetAnimationByName(ANI_CLIMBING, "Climbing")
+				GetAnimationByName(ANI_LEDGE_PULLUP, "Ledge Pull Up")
+				break
+			end switch
+			CallFunction(Player_UpdatePhysicsState)
+			if playerCount > 1
+				currentPlayer = 1
+				CallFunction(Player_UpdatePhysicsState)
+				currentPlayer = 0
 			end if
-			break
-		case PLAYER_TAILS
-			object[0].type = TypeName[Tails Object]
-			player[0].character = PLAYER_TAILS
-			LoadAnimation("Tails.ani")
-			player[0].jumpOffset = -1
-			player[0].jumpAbility = Player_Action_DblJumpTails
-
-			// Default Tails' peelout to the Jump action
-			player[0].actionPeelout = Player_Action_Jump
-
-			// Then, set the correct spindash accordingly
-			if options.originalControls == false
-				player[0].actionSpindash = Player_Action_Spindash_S2
-			else
-				player[0].actionSpindash = Player_State_Spindash_CD
-			end if
-			break
-		end switch
-		
-		playerCount = 1
-		currentPlayer = 0
-		CallFunction(Player_UpdatePhysicsState)
+		end if
 		ResetObjectEntity(arrayPos0, TypeName[Blank Object], 0, 0, 0)
 	next
-
-	Mini_PlayerFlag = false
-	
-	GetAnimationByName(ANI_SPINNING_TOP, "Spinning Top")
-	GetAnimationByName(ANI_RAMP_RUNNING1, "3D Ramp 1")
-	GetAnimationByName(ANI_RAMP_RUNNING2, "3D Ramp 2")
-	GetAnimationByName(ANI_RAMP_RUNNING3, "3D Ramp 3")
-	GetAnimationByName(ANI_RAMP_RUNNING4, "3D Ramp 4")
-	GetAnimationByName(ANI_RAMP_RUNNING5, "3D Ramp 5")
-	GetAnimationByName(ANI_RAMP_RUNNING6, "3D Ramp 6")
-	GetAnimationByName(ANI_ROLL3D, "3D Ramp 7")
-	GetAnimationByName(ANI_SIZE_CHANGE, "Size Change")
+	GetAnimationByName(ANI_DROPDASH, "Drop Dash")
 end event
+
+
 
 event RSDKDraw
 	DrawSprite(0)
@@ -2812,3 +2799,85 @@ event RSDKLoad
 	// Used in-game, but not to be set from the editor
 	SetVariableAlias(ALIAS_VAR_PROPVAL, "unused")
 end event
+public function Player_Action_DropDash
+	if player.character < 2 // Sonic
+		if player.animation == 2 // ANI_JUMPING
+			if player.jumpHold == true
+				player.abilityTimer++
+				if player.abilityTimer >= 20
+					player.animation = ANI_DROPDASH
+					if player.abilityTimer == 20: PlaySfx(SfxName[Charge], 0)
+				end if
+			else
+				player.abilityTimer = 0
+			end if
+		end if
+	end if
+end function
+
+public function Player_Sidekick_UpdateAI
+	if player.carrying == true
+		player.up = object[0].up; player.down = object[0].down
+		player.left = object[0].left; player.right = object[0].right
+		player.jumpHold = object[0].jumpHold; player.jumpPress = object[0].jumpPress
+		return
+	end if
+	temp0 = (saveRAM[1200] - 32) & 63
+	temp1 = saveRAM[1000 + temp0]
+	temp2 = saveRAM[1100 + temp0]
+	player.left = false; player.right = false; player.jumpPress = false
+	if player.xpos < temp1: player.right = true
+	elif player.xpos > temp1: player.left = true
+	if player.gravity == 0
+		if player.ypos > temp2: player.jumpPress = true
+	else: player.jumpHold = (player.ypos > temp2)
+end function
+
+public function Player_Action_Glide
+	if player.jumpPress == true
+		player.state = Player_State_Glide
+		player.animation = ANI_GLIDING
+		player.yvel = 0x8000
+		player.speed = 0x40000 if player.direction == 0 else -0x40000
+		player.xvel = player.speed
+	end if
+end function
+
+public function Player_State_Glide
+	player.yvel = 0x8000; player.xvel = player.speed
+	if player.jumpHold == false
+		player.state = Player_State_GlideDrop
+		player.animation = ANI_GLIDE_DROP
+	end if
+	temp0 = 10 if player.direction == 0 else -10
+	ObjectTileCollision(2, temp0, 0, player.collisionPlane)
+	if checkResult == true: player.state = Player_State_Climb; player.animation = ANI_CLIMBING; player.speed = 0; player.xvel = 0
+	if player.gravity == 0: player.state = Player_State_Ground; player.animation = 0
+end function
+
+public function Player_State_GlideDrop
+	player.yvel += player.gravityStrength; player.xvel = 0
+	if player.gravity == 0: player.state = Player_State_Ground; player.animation = 0
+end function
+
+public function Player_State_Climb
+	player.xvel = 0; player.yvel = 0
+	if player.up == true: player.ypos -= 0x10000
+	elif player.down == true: player.ypos += 0x10000
+	temp0 = 10 if player.direction == 0 else -10
+	ObjectTileCollision(2, temp0, -16, player.collisionPlane)
+	if checkResult == false: player.state = Player_State_LedgePullUp; player.animation = ANI_LEDGE_PULLUP; player.timer = 0
+	if player.jumpPress == true: player.state = Player_State_Air; player.yvel = -0x40000
+end function
+
+public function Player_State_LedgePullUp
+	player.timer++
+	if player.timer > 20: player.state = Player_State_Ground; player.ypos -= 0x180000; player.xpos += (0x100000 if player.direction == 0 else -0x100000)
+end function
+
+public function Player_State_Carried
+	player.xpos = object[1].xpos; player.ypos = object[1].ypos + 0x100000
+	player.direction = object[1].direction
+	if player.jumpPress == true: player.state = Player_State_Air; player.yvel = -0x40000; object[1].carrying = false
+	if object[1].state != Player_State_Fly: player.state = Player_State_Air; object[1].carrying = false
+end function
