@@ -44,21 +44,20 @@ public alias 46 : ANI_CLIMBING
 public alias 47 : ANI_LEDGE_PULLUP
 public alias 48 : ANI_DROPDASH
 
-
 // Physics Tables
 private table Player_SonicPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
 end table
 
 private table Player_TailsPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x68000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x38000, -0x20000
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
 end table
 
 private table Player_KnucklesPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, 0x60000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, 0x30000, -0x20000
+	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x60000, -0x40000
+	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x30000, -0x20000
 end table
 
 event ObjectUpdate
@@ -66,55 +65,67 @@ event ObjectUpdate
     CallFunction(player.state)
     ProcessAnimation()
 end event
-
 event ObjectDraw
     DrawObjectAnimation()
 end event
-
 event ObjectStartup
+    LoadSpriteSheet("Players/Tails1.gif")
+    LoadAnimation("Tails.ani")
 end event
 public function Player_UpdatePhysicsState
+	temp0 = 0
 	switch player[currentPlayer].character
-	case 0: temp0 = 0; break
-	case 1: temp0 = 0; break
-	case 2: temp0 = 1; break
-	case 3: temp0 = 2; break
+	case 0
+		temp0 = 0
+		break
+	case 1
+		temp0 = 0
+		break
+	case 2
+		temp0 = 1
+		break
+	case 3
+		temp0 = 2
+		break
 	end switch
-
 	temp1 = 0
 	if player[currentPlayer].ypos > stage.waterLevel
 		temp1 = 8
-		player[currentPlayer].gravityStrength = 0x1000
+		player[currentPlayer].gravityStrength = 4096
 	else
-		player[currentPlayer].gravityStrength = 0x3800
+		player[currentPlayer].gravityStrength = 14336
 	end if
-
 	switch temp0
-	case 0: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_SonicPhysicsTable); break
-	case 1: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_TailsPhysicsTable); break
-	case 2: GetTableValue(player[currentPlayer].topSpeed, temp1, Player_KnucklesPhysicsTable); break
-	end switch
-	temp1++
-	switch temp0
-	case 0: GetTableValue(player[currentPlayer].acceleration, temp1, Player_SonicPhysicsTable); break
-	case 1: GetTableValue(player[currentPlayer].acceleration, temp1, Player_TailsPhysicsTable); break
-	case 2: GetTableValue(player[currentPlayer].acceleration, temp1, Player_KnucklesPhysicsTable); break
+	case 0
+		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_SonicPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].acceleration, temp1, Player_SonicPhysicsTable)
+		temp1 += 5
+		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_SonicPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_SonicPhysicsTable)
+		break
+	case 1
+		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_TailsPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].acceleration, temp1, Player_TailsPhysicsTable)
+		temp1 += 5
+		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_TailsPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_TailsPhysicsTable)
+		break
+	case 2
+		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_KnucklesPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].acceleration, temp1, Player_KnucklesPhysicsTable)
+		temp1 += 5
+		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_KnucklesPhysicsTable)
+		temp1++
+		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_KnucklesPhysicsTable)
+		break
 	end switch
 	player[currentPlayer].deceleration = player[currentPlayer].acceleration
-	temp1 += 5
-	switch temp0
-	case 0: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_SonicPhysicsTable); break
-	case 1: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_TailsPhysicsTable); break
-	case 2: GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_KnucklesPhysicsTable); break
-	end switch
-	temp1++
-	switch temp0
-	case 0: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_SonicPhysicsTable); break
-	case 1: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_TailsPhysicsTable); break
-	case 2: GetTableValue(player[currentPlayer].jumpCap, temp1, Player_KnucklesPhysicsTable); break
-	end switch
 end function
-
 public function Player_ProcessUpdate
 	if player.isSidekick == true
 		CallFunction(Player_Sidekick_UpdateAI)
@@ -123,15 +134,17 @@ public function Player_ProcessUpdate
 		if playerCount > 1
 			if player.state == Player_State_Air
 				if object[1].state == Player_State_Fly
-					if object[1].carrying == false
-						temp0 = player.xpos - object[1].xpos
+					if object[1].value14 == false
+						temp0 = player.xpos
+						temp0 -= object[1].xpos
 						Abs(temp0)
-						if temp0 < 0x100000
-							temp0 = player.ypos - object[1].ypos
+						if temp0 < 1048576
+							temp0 = player.ypos
+							temp0 -= object[1].ypos
 							Abs(temp0)
-							if temp0 < 0x180000
+							if temp0 < 1572864
 								player.state = Player_State_Carried
-								object[1].carrying = true
+								object[1].value14 = true
 							end if
 						end if
 					end if
@@ -140,22 +153,29 @@ public function Player_ProcessUpdate
 		end if
 		if player.entityPos == 0
 			temp0 = saveRAM[1200]
-			saveRAM[1000 + temp0] = player.xpos
-			saveRAM[1100 + temp0] = player.ypos
-			saveRAM[1200] = (temp0 + 1) & 63
+			temp1 = 1000
+			temp1 += temp0
+			saveRAM[temp1] = player.xpos
+			temp1 = 1100
+			temp1 += temp0
+			saveRAM[temp1] = player.ypos
+			temp0++
+			temp0 &= 63
+			saveRAM[1200] = temp0
 		end if
 	end if
 end function
 
-
 public function Player_Action_DropDash
-	if player.character < 2 // Sonic
-		if player.animation == 2 // ANI_JUMPING
+	if player.character < 2
+		if player.animation == 2
 			if player.jumpHold == true
 				player.abilityTimer++
 				if player.abilityTimer >= 20
 					player.animation = ANI_DROPDASH
-					if player.abilityTimer == 20: PlaySfx(SfxName[Charge], 0)
+					if player.abilityTimer == 20
+						PlaySfx(SfxName[Charge], 0)
+					end if
 				end if
 			else
 				player.abilityTimer = 0
@@ -166,67 +186,142 @@ end function
 
 public function Player_Sidekick_UpdateAI
 	if player.carrying == true
-		player.up = object[0].up; player.down = object[0].down
-		player.left = object[0].left; player.right = object[0].right
-		player.jumpHold = object[0].jumpHold; player.jumpPress = object[0].jumpPress
+		player.up = object[0].up
+		player.down = object[0].down
+		player.left = object[0].left
+		player.right = object[0].right
+		player.jumpHold = object[0].jumpHold
+		player.jumpPress = object[0].jumpPress
 		return
 	end if
-	temp0 = (saveRAM[1200] - 32) & 63
+	temp0 = saveRAM[1200]
+	temp0 -= 32
+	temp0 &= 63
 	temp1 = saveRAM[1000 + temp0]
 	temp2 = saveRAM[1100 + temp0]
-	player.left = false; player.right = false; player.jumpPress = false
-	if player.xpos < temp1: player.right = true
-	elif player.xpos > temp1: player.left = true
+	player.left = false
+	player.right = false
+	player.jumpPress = false
+	if player.xpos < temp1
+		player.right = true
+	else
+		if player.xpos > temp1
+			player.left = true
+		end if
+	end if
 	if player.gravity == 0
-		if player.ypos > temp2: player.jumpPress = true
-	else: player.jumpHold = (player.ypos > temp2)
+		if player.ypos > temp2
+			player.jumpPress = true
+		end if
+	else
+		if player.ypos > temp2
+			player.jumpHold = true
+		else
+			player.jumpHold = false
+		end if
+	end if
 end function
 
 public function Player_Action_Glide
 	if player.jumpPress == true
 		player.state = Player_State_Glide
 		player.animation = ANI_GLIDING
-		player.yvel = 0x8000
-		player.speed = 0x40000 if player.direction == 0 else -0x40000
+		player.yvel = 32768
+		if player.direction == 0
+			player.speed = 262144
+		else
+			player.speed = -262144
+		end if
 		player.xvel = player.speed
 	end if
 end function
 
 public function Player_State_Glide
-	player.yvel = 0x8000; player.xvel = player.speed
+	player.yvel = 32768
+	player.xvel = player.speed
 	if player.jumpHold == false
 		player.state = Player_State_GlideDrop
 		player.animation = ANI_GLIDE_DROP
 	end if
-	temp0 = 10 if player.direction == 0 else -10
+	if player.direction == 0
+		temp0 = 10
+	else
+		temp0 = -10
+	end if
 	ObjectTileCollision(2, temp0, 0, player.collisionPlane)
-	if checkResult == true: player.state = Player_State_Climb; player.animation = ANI_CLIMBING; player.speed = 0; player.xvel = 0
-	if player.gravity == 0: player.state = Player_State_Ground; player.animation = 0
+	if checkResult == true
+		player.state = Player_State_Climb
+		player.animation = ANI_CLIMBING
+		player.speed = 0
+		player.xvel = 0
+	end if
+	if player.gravity == 0
+		player.state = Player_State_Ground
+		player.animation = 0
+	end if
 end function
 
 public function Player_State_GlideDrop
-	player.yvel += player.gravityStrength; player.xvel = 0
-	if player.gravity == 0: player.state = Player_State_Ground; player.animation = 0
+	player.yvel += player.gravityStrength
+	player.xvel = 0
+	if player.gravity == 0
+		player.state = Player_State_Ground
+		player.animation = 0
+	end if
 end function
 
 public function Player_State_Climb
-	player.xvel = 0; player.yvel = 0
-	if player.up == true: player.ypos -= 0x10000
-	elif player.down == true: player.ypos += 0x10000
-	temp0 = 10 if player.direction == 0 else -10
+	player.xvel = 0
+	player.yvel = 0
+	if player.up == true
+		player.ypos -= 65536
+	else
+		if player.down == true
+			player.ypos += 65536
+		end if
+	end if
+	if player.direction == 0
+		temp0 = 10
+	else
+		temp0 = -10
+	end if
 	ObjectTileCollision(2, temp0, -16, player.collisionPlane)
-	if checkResult == false: player.state = Player_State_LedgePullUp; player.animation = ANI_LEDGE_PULLUP; player.timer = 0
-	if player.jumpPress == true: player.state = Player_State_Air; player.yvel = -0x40000
+	if checkResult == false
+		player.state = Player_State_LedgePullUp
+		player.animation = ANI_LEDGE_PULLUP
+		player.timer = 0
+	end if
+	if player.jumpPress == true
+		player.state = Player_State_Air
+		player.yvel = -262144
+	end if
 end function
 
 public function Player_State_LedgePullUp
 	player.timer++
-	if player.timer > 20: player.state = Player_State_Ground; player.ypos -= 0x180000; player.xpos += (0x100000 if player.direction == 0 else -0x100000)
+	if player.timer > 20
+		player.state = Player_State_Ground
+		player.ypos -= 1572864
+		if player.direction == 0
+			player.xpos += 1048576
+		else
+			player.xpos -= 1048576
+		end if
+	end if
 end function
 
 public function Player_State_Carried
-	player.xpos = object[1].xpos; player.ypos = object[1].ypos + 0x100000
+	player.xpos = object[1].xpos
+	player.ypos = object[1].ypos
+	player.ypos += 1048576
 	player.direction = object[1].direction
-	if player.jumpPress == true: player.state = Player_State_Air; player.yvel = -0x40000; object[1].carrying = false
-	if object[1].state != Player_State_Fly: player.state = Player_State_Air; object[1].carrying = false
+	if player.jumpPress == true
+		player.state = Player_State_Air
+		player.yvel = -262144
+		object[1].value14 = false
+	end if
+	if object[1].state != Player_State_Fly
+		player.state = Player_State_Air
+		object[1].value14 = false
+	end if
 end function

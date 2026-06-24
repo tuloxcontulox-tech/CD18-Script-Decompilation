@@ -57,14 +57,20 @@ event ObjectDraw
 		DrawSpriteScreenXY(14, temp1, 15)
 		DrawSpriteScreenXY(21, temp1, 31)
 	end if
-
-	switch player[0].character
-	case 1: DrawSpriteScreenXY(17, 16, 212); break
-	case 2: DrawSpriteScreenXY(22, 16, 212); break
-	case 3: DrawSpriteScreenXY(23, 16, 212); break
-	case 0: DrawSpriteScreenXY(17, 16, 212); break
+		switch player[0].character
+	case 1
+		DrawSpriteScreenXY(17, 16, 212)
+		break
+	case 2
+		DrawSpriteScreenXY(18, 16, 212)
+		break
+	case 3
+		DrawSpriteScreenXY(19, 16, 212)
+		break
+	case 0
+		DrawSpriteScreenXY(17, 16, 212)
+		break
 	end switch
-
 	DrawSpriteScreenXY(14, 32, 220)
 	if player.lives < 10
 		DrawNumbers(0, 40, 217, player.lives, 1, 8, 1)
@@ -120,14 +126,12 @@ event ObjectStartup
 	SpriteFrame(0, 0, 32, 16, 90, 67) // 15
 	SpriteFrame(0, 0, 32, 16, 123, 67)// 16
 	SpriteFrame(0, 0, 16, 16, 1, 143) // 17 - Sonic
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 18
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 19
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 20
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 21
+
 	LoadSpriteSheet("Global/Display_t.gif")
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 22 - Tails
+	SpriteFrame(0, 0, 16, 16, 1, 143) // 18 - Tails
+
 	LoadSpriteSheet("Global/Display_k.gif")
-	SpriteFrame(0, 0, 16, 16, 1, 143) // 23 - Knux
+	SpriteFrame(0, 0, 16, 16, 1, 143) // 19 - Knuckles
 end event
 
 event RSDKDraw
