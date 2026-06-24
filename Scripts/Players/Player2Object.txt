@@ -34,6 +34,14 @@ private alias object.value26 : player.jumpStrength
 private alias object.value27 : player.jumpCap
 private alias object.value28 : player.rollingFriction
 private alias object.value29 : player.jumpOffset
+private alias object.value0  : player.rings
+private alias object.value1  : player.timer
+private alias object.value2  : player.abilityTimer
+private alias object.value34 : player.jumpAbilityState
+private alias object.collisionPlane : player.collisionPlane
+
+
+
 
 public alias arrayPos6 : currentPlayer
 public alias arrayPos7 : playerCount
