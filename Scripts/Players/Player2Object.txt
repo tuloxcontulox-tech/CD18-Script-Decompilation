@@ -44,6 +44,19 @@ public alias 46 : ANI_CLIMBING
 public alias 47 : ANI_LEDGE_PULLUP
 public alias 48 : ANI_DROPDASH
 
+// Function declarations
+reserve function Player_UpdatePhysicsState
+reserve function Player_ProcessUpdate
+reserve function Player_Action_DropDash
+reserve function Player_Sidekick_UpdateAI
+reserve function Player_Action_Glide
+reserve function Player_State_Glide
+reserve function Player_State_GlideDrop
+reserve function Player_State_Climb
+reserve function Player_State_LedgePullUp
+reserve function Player_State_Carried
+
+
 // Physics Tables
 private table Player_SonicPhysicsTable
 	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
