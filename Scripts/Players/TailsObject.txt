@@ -1,69 +1,11 @@
 //-------Aliases-------//
-private alias object.type : player.type
-private alias object.entityPos : player.entityPos
-private alias object.state : player.state
-private alias object.xpos : player.xpos
-private alias object.ypos : player.ypos
-private alias object.xvel : player.xvel
-private alias object.yvel : player.yvel
-private alias object.speed : player.speed
-private alias object.direction : player.direction
-private alias object.gravity : player.gravity
-private alias object.animation : player.animation
-private alias object.prevAnimation : player.prevAnimation
-private alias object.animationSpeed : player.animationSpeed
-private alias object.animationTimer : player.animationTimer
-private alias object.drawOrder : player.drawOrder
-private alias object.collisionDisabled : player.collisionDisabled
-private alias object.propertyValue : player.character
-private alias object.value14 : player.carrying
-private alias object.value15 : player.isSidekick
-private alias object.jumpHold : player.jumpHold
-private alias object.jumpPress : player.jumpPress
-private alias object.up : player.up
-private alias object.down : player.down
-private alias object.left : player.left
-private alias object.right : player.right
-private alias object.value19 : player.topSpeed
-private alias object.value20 : player.acceleration
-private alias object.value21 : player.deceleration
-private alias object.value22 : player.airAcceleration
-private alias object.value23 : player.airDeceleration
-private alias object.value24 : player.gravityStrength
-private alias object.value26 : player.jumpStrength
-private alias object.value27 : player.jumpCap
-private alias object.value28 : player.rollingFriction
-private alias object.value29 : player.jumpOffset
-private alias object.value0  : player.rings
-private alias object.value1  : player.timer
-private alias object.value2  : player.abilityTimer
-private alias object.value34 : player.jumpAbilityState
-private alias object.collisionPlane : player.collisionPlane
-
-
-
-
 public alias arrayPos6 : currentPlayer
 public alias arrayPos7 : playerCount
-
 public alias 44 : ANI_GLIDING
 public alias 45 : ANI_GLIDE_DROP
 public alias 46 : ANI_CLIMBING
 public alias 47 : ANI_LEDGE_PULLUP
 public alias 48 : ANI_DROPDASH
-
-// Function declarations
-reserve function Player_UpdatePhysicsState
-reserve function Player_ProcessUpdate
-reserve function Player_Action_DropDash
-reserve function Player_Sidekick_UpdateAI
-reserve function Player_Action_Glide
-reserve function Player_State_Glide
-reserve function Player_State_GlideDrop
-reserve function Player_State_Climb
-reserve function Player_State_LedgePullUp
-reserve function Player_State_Carried
-
 
 // Physics Tables
 private table Player_SonicPhysicsTable
@@ -83,7 +25,7 @@ end table
 
 event ObjectUpdate
     CallFunction(Player_ProcessUpdate)
-    CallFunction(player.state)
+    CallFunction(object.state)
     ProcessAnimation()
 end event
 event ObjectDraw
@@ -95,7 +37,7 @@ event ObjectStartup
 end event
 public function Player_UpdatePhysicsState
 	temp0 = 0
-	switch player[currentPlayer].propertyValue
+	switch object[currentPlayer].propertyValue
 	case 0
 		temp0 = 0
 		break
@@ -110,61 +52,61 @@ public function Player_UpdatePhysicsState
 		break
 	end switch
 	temp1 = 0
-	if player[currentPlayer].ypos > stage.waterLevel
+	if object[currentPlayer].ypos > stage.waterLevel
 		temp1 = 8
-		player[currentPlayer].value24 = 4096
+		object[currentPlayer].value24 = 4096
 	else
-		player[currentPlayer].value24 = 14336
+		object[currentPlayer].value24 = 14336
 	end if
 	switch temp0
 	case 0
-		GetTableValue(player[currentPlayer].value19, temp1, Player_SonicPhysicsTable)
+		GetTableValue(object[currentPlayer].value19, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value20, temp1, Player_SonicPhysicsTable)
+		GetTableValue(object[currentPlayer].value20, temp1, Player_SonicPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].value26, temp1, Player_SonicPhysicsTable)
+		GetTableValue(object[currentPlayer].value26, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value27, temp1, Player_SonicPhysicsTable)
+		GetTableValue(object[currentPlayer].value27, temp1, Player_SonicPhysicsTable)
 		break
 	case 1
-		GetTableValue(player[currentPlayer].value19, temp1, Player_TailsPhysicsTable)
+		GetTableValue(object[currentPlayer].value19, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value20, temp1, Player_TailsPhysicsTable)
+		GetTableValue(object[currentPlayer].value20, temp1, Player_TailsPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].value26, temp1, Player_TailsPhysicsTable)
+		GetTableValue(object[currentPlayer].value26, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value27, temp1, Player_TailsPhysicsTable)
+		GetTableValue(object[currentPlayer].value27, temp1, Player_TailsPhysicsTable)
 		break
 	case 2
-		GetTableValue(player[currentPlayer].value19, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(object[currentPlayer].value19, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value20, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(object[currentPlayer].value20, temp1, Player_KnucklesPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].value26, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(object[currentPlayer].value26, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].value27, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(object[currentPlayer].value27, temp1, Player_KnucklesPhysicsTable)
 		break
 	end switch
-	player[currentPlayer].value21 = player[currentPlayer].value20
+	object[currentPlayer].value21 = object[currentPlayer].value20
 end function
 public function Player_ProcessUpdate
-	if player.isSidekick == true
+	if object.value15 == true
 		CallFunction(Player_Sidekick_UpdateAI)
 	else
 		ProcessObjectControl()
 		if playerCount > 1
-			if player.state == Player_State_Air
+			if object.state == Player_State_Air
 				if object[1].state == Player_State_Fly
 					if object[1].value14 == false
-						temp0 = player.xpos
+						temp0 = object.xpos
 						temp0 -= object[1].xpos
 						Abs(temp0)
 						if temp0 < 1048576
-							temp0 = player.ypos
+							temp0 = object.ypos
 							temp0 -= object[1].ypos
 							Abs(temp0)
 							if temp0 < 1572864
-								player.state = Player_State_Carried
+								object.state = Player_State_Carried
 								object[1].value14 = true
 							end if
 						end if
@@ -172,14 +114,14 @@ public function Player_ProcessUpdate
 				end if
 			end if
 		end if
-		if player.entityPos == 0
+		if object.entityPos == 0
 			temp0 = saveRAM[1200]
 			temp1 = 1000
 			temp1 += temp0
-			saveRAM[temp1] = player.xpos
+			saveRAM[temp1] = object.xpos
 			temp1 = 1100
 			temp1 += temp0
-			saveRAM[temp1] = player.ypos
+			saveRAM[temp1] = object.ypos
 			temp0++
 			temp0 &= 63
 			saveRAM[1200] = temp0
@@ -188,31 +130,31 @@ public function Player_ProcessUpdate
 end function
 
 public function Player_Action_DropDash
-	if player.character < 2
-		if player.animation == 2
-			if player.jumpHold == true
-				player.abilityTimer++
-				if player.abilityTimer >= 20
-					player.animation = ANI_DROPDASH
-					if player.abilityTimer == 20
+	if object.propertyValue < 2
+		if object.animation == 2
+			if object.jumpHold == true
+				object.value2++
+				if object.value2 >= 20
+					object.animation = ANI_DROPDASH
+					if object.value2 == 20
 						PlaySfx(SfxName[Charge], 0)
 					end if
 				end if
 			else
-				player.abilityTimer = 0
+				object.value2 = 0
 			end if
 		end if
 	end if
 end function
 
 public function Player_Sidekick_UpdateAI
-	if player.carrying == true
-		player.up = object[0].up
-		player.down = object[0].down
-		player.left = object[0].left
-		player.right = object[0].right
-		player.jumpHold = object[0].jumpHold
-		player.jumpPress = object[0].jumpPress
+	if object.value14 == true
+		object.up = object[0].up
+		object.down = object[0].down
+		object.left = object[0].left
+		object.right = object[0].right
+		object.jumpHold = object[0].jumpHold
+		object.jumpPress = object[0].jumpPress
 		return
 	end if
 	temp0 = saveRAM[1200]
@@ -220,129 +162,129 @@ public function Player_Sidekick_UpdateAI
 	temp0 &= 63
 	temp1 = saveRAM[1000 + temp0]
 	temp2 = saveRAM[1100 + temp0]
-	player.left = false
-	player.right = false
-	player.jumpPress = false
-	if player.xpos < temp1
-		player.right = true
+	object.left = false
+	object.right = false
+	object.jumpPress = false
+	if object.xpos < temp1
+		object.right = true
 	else
-		if player.xpos > temp1
-			player.left = true
+		if object.xpos > temp1
+			object.left = true
 		end if
 	end if
-	if player.gravity == 0
-		if player.ypos > temp2
-			player.jumpPress = true
+	if object.gravity == 0
+		if object.ypos > temp2
+			object.jumpPress = true
 		end if
 	else
-		if player.ypos > temp2
-			player.jumpHold = true
+		if object.ypos > temp2
+			object.jumpHold = true
 		else
-			player.jumpHold = false
+			object.jumpHold = false
 		end if
 	end if
 end function
 
 public function Player_Action_Glide
-	if player.jumpPress == true
-		player.state = Player_State_Glide
-		player.animation = ANI_GLIDING
-		player.yvel = 32768
-		if player.direction == 0
-			player.speed = 262144
+	if object.jumpPress == true
+		object.state = Player_State_Glide
+		object.animation = ANI_GLIDING
+		object.yvel = 32768
+		if object.direction == 0
+			object.speed = 262144
 		else
-			player.speed = -262144
+			object.speed = -262144
 		end if
-		player.xvel = player.speed
+		object.xvel = object.speed
 	end if
 end function
 
 public function Player_State_Glide
-	player.yvel = 32768
-	player.xvel = player.speed
-	if player.jumpHold == false
-		player.state = Player_State_GlideDrop
-		player.animation = ANI_GLIDE_DROP
+	object.yvel = 32768
+	object.xvel = object.speed
+	if object.jumpHold == false
+		object.state = Player_State_GlideDrop
+		object.animation = ANI_GLIDE_DROP
 	end if
-	if player.direction == 0
+	if object.direction == 0
 		temp0 = 10
 	else
 		temp0 = -10
 	end if
-	ObjectTileCollision(2, temp0, 0, player.collisionPlane)
+	ObjectTileCollision(2, temp0, 0, object.value33)
 	if checkResult == true
-		player.state = Player_State_Climb
-		player.animation = ANI_CLIMBING
-		player.speed = 0
-		player.xvel = 0
+		object.state = Player_State_Climb
+		object.animation = ANI_CLIMBING
+		object.speed = 0
+		object.xvel = 0
 	end if
-	if player.gravity == 0
-		player.state = Player_State_Ground
-		player.animation = 0
+	if object.gravity == 0
+		object.state = Player_State_Ground
+		object.animation = 0
 	end if
 end function
 
 public function Player_State_GlideDrop
-	player.yvel += player.gravityStrength
-	player.xvel = 0
-	if player.gravity == 0
-		player.state = Player_State_Ground
-		player.animation = 0
+	object.yvel += object.value24
+	object.xvel = 0
+	if object.gravity == 0
+		object.state = Player_State_Ground
+		object.animation = 0
 	end if
 end function
 
 public function Player_State_Climb
-	player.xvel = 0
-	player.yvel = 0
-	if player.up == true
-		player.ypos -= 65536
+	object.xvel = 0
+	object.yvel = 0
+	if object.up == true
+		object.ypos -= 65536
 	else
-		if player.down == true
-			player.ypos += 65536
+		if object.down == true
+			object.ypos += 65536
 		end if
 	end if
-	if player.direction == 0
+	if object.direction == 0
 		temp0 = 10
 	else
 		temp0 = -10
 	end if
-	ObjectTileCollision(2, temp0, -16, player.collisionPlane)
+	ObjectTileCollision(2, temp0, -16, object.value33)
 	if checkResult == false
-		player.state = Player_State_LedgePullUp
-		player.animation = ANI_LEDGE_PULLUP
-		player.timer = 0
+		object.state = Player_State_LedgePullUp
+		object.animation = ANI_LEDGE_PULLUP
+		object.value1 = 0
 	end if
-	if player.jumpPress == true
-		player.state = Player_State_Air
-		player.yvel = -262144
+	if object.jumpPress == true
+		object.state = Player_State_Air
+		object.yvel = -262144
 	end if
 end function
 
 public function Player_State_LedgePullUp
-	player.timer++
-	if player.timer > 20
-		player.state = Player_State_Ground
-		player.ypos -= 1572864
-		if player.direction == 0
-			player.xpos += 1048576
+	object.value1++
+	if object.value1 > 20
+		object.state = Player_State_Ground
+		object.ypos -= 1572864
+		if object.direction == 0
+			object.xpos += 1048576
 		else
-			player.xpos -= 1048576
+			object.xpos -= 1048576
 		end if
 	end if
 end function
 
 public function Player_State_Carried
-	player.xpos = object[1].xpos
-	player.ypos = object[1].ypos
-	player.ypos += 1048576
-	player.direction = object[1].direction
-	if player.jumpPress == true
-		player.state = Player_State_Air
-		player.yvel = -262144
+	object.xpos = object[1].xpos
+	object.ypos = object[1].ypos
+	object.ypos += 1048576
+	object.direction = object[1].direction
+	if object.jumpPress == true
+		object.state = Player_State_Air
+		object.yvel = -262144
 		object[1].value14 = false
 	end if
 	if object[1].state != Player_State_Fly
-		player.state = Player_State_Air
+		object.state = Player_State_Air
 		object[1].value14 = false
 	end if
 end function

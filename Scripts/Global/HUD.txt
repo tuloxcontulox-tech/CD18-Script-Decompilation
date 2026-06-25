@@ -36,7 +36,7 @@ event ObjectDraw
 		end if
 	end if
 	DrawSpriteScreenXY(13, 67, 29)
-	DrawNumbers(0, 104, 13, player.score, 6, 8, 0)
+	DrawNumbers(0, 104, 13, object.score, 6, 8, 0)
 	DrawNumbers(0, 104, 29, stage.milliSeconds, 2, 8, 1)
 	DrawNumbers(0, 80, 29, stage.seconds, 2, 8, 1)
 	DrawNumbers(0, 56, 29, stage.minutes, 1, 8, 1)
@@ -57,7 +57,7 @@ event ObjectDraw
 		DrawSpriteScreenXY(14, temp1, 15)
 		DrawSpriteScreenXY(21, temp1, 31)
 	end if
-		switch player[0].propertyValue
+					switch object[0].propertyValue
 	case 1
 		DrawSpriteScreenXY(17, 16, 212)
 		break
@@ -72,19 +72,19 @@ event ObjectDraw
 		break
 	end switch
 	DrawSpriteScreenXY(14, 32, 220)
-	if player.lives < 10
-		DrawNumbers(0, 40, 217, player.lives, 1, 8, 1)
+	if object.lives < 10
+		DrawNumbers(0, 40, 217, object.lives, 1, 8, 1)
 		temp1 = 52
 	else
-		DrawNumbers(0, 48, 217, player.lives, 2, 8, 1)
+		DrawNumbers(0, 48, 217, object.lives, 2, 8, 1)
 		temp1 = 60
 	end if
 	switch warp.destination
 	case 1
-		if warp.timer < 100
+		if warp.value1 < 100
 			DrawSpriteScreenXY(15, temp1, 214)
 		else
-			temp0 = warp.timer
+			temp0 = warp.value1
 			temp0 &= 1
 			if temp0 == 0
 				DrawSpriteScreenXY(15, temp1, 214)
@@ -92,10 +92,10 @@ event ObjectDraw
 		end if
 		break
 	case 2
-		if warp.timer < 100
+		if warp.value1 < 100
 			DrawSpriteScreenXY(16, temp1, 214)
 		else
-			temp0 = warp.timer
+			temp0 = warp.value1
 			temp0 &= 1
 			if temp0 == 0
 				DrawSpriteScreenXY(16, temp1, 214)
