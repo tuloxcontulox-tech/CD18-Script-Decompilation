@@ -7,6 +7,19 @@
 
 //-------Aliases-------//
 
+// Function declarations
+reserve function Player_UpdatePhysicsState
+reserve function Player_ProcessUpdate
+reserve function Player_Action_DropDash
+reserve function Player_Sidekick_UpdateAI
+reserve function Player_Action_Glide
+reserve function Player_State_Glide
+reserve function Player_State_GlideDrop
+reserve function Player_State_Climb
+reserve function Player_State_LedgePullUp
+reserve function Player_State_Carried
+
+
 private alias 1 : TYPE_PLAYEROBJECT
 
 public alias 256 : GROUP_PLAYERS

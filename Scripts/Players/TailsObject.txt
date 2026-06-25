@@ -1,4 +1,17 @@
 //-------Aliases-------//
+
+// Function declarations
+reserve function Player_UpdatePhysicsState
+reserve function Player_ProcessUpdate
+reserve function Player_Action_DropDash
+reserve function Player_Sidekick_UpdateAI
+reserve function Player_Action_Glide
+reserve function Player_State_Glide
+reserve function Player_State_GlideDrop
+reserve function Player_State_Climb
+reserve function Player_State_LedgePullUp
+reserve function Player_State_Carried
+
 public alias arrayPos6 : currentPlayer
 public alias arrayPos7 : playerCount
 public alias 44 : ANI_GLIDING
