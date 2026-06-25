@@ -95,7 +95,7 @@ event ObjectStartup
 end event
 public function Player_UpdatePhysicsState
 	temp0 = 0
-	switch player[currentPlayer].character
+	switch player[currentPlayer].propertyValue
 	case 0
 		temp0 = 0
 		break
@@ -112,40 +112,40 @@ public function Player_UpdatePhysicsState
 	temp1 = 0
 	if player[currentPlayer].ypos > stage.waterLevel
 		temp1 = 8
-		player[currentPlayer].gravityStrength = 4096
+		player[currentPlayer].value24 = 4096
 	else
-		player[currentPlayer].gravityStrength = 14336
+		player[currentPlayer].value24 = 14336
 	end if
 	switch temp0
 	case 0
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_SonicPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_SonicPhysicsTable)
 		break
 	case 1
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_TailsPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_TailsPhysicsTable)
 		break
 	case 2
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_KnucklesPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_KnucklesPhysicsTable)
 		break
 	end switch
-	player[currentPlayer].deceleration = player[currentPlayer].acceleration
+	player[currentPlayer].value21 = player[currentPlayer].value20
 end function
 public function Player_ProcessUpdate
 	if player.isSidekick == true

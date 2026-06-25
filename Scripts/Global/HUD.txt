@@ -57,7 +57,7 @@ event ObjectDraw
 		DrawSpriteScreenXY(14, temp1, 15)
 		DrawSpriteScreenXY(21, temp1, 31)
 	end if
-		switch player[0].character
+		switch player[0].propertyValue
 	case 1
 		DrawSpriteScreenXY(17, 16, 212)
 		break

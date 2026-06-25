@@ -268,7 +268,7 @@ public function Player_SetupAttractDemo
 		player[currentPlayer].right 		= false
 		player[currentPlayer].jumpPress 	= false
 		player[currentPlayer].jumpHold 		= false
-		player[currentPlayer].timer 		= 0
+		player[currentPlayer].value1 		= 0
 		currentPlayer++
 	loop
 	screen[0].cameraX = object[0].ixpos
@@ -277,7 +277,7 @@ end function
 
 
 public function Player_ApplyShield
-	switch player[currentPlayer].shield
+	switch player[currentPlayer].value38
 	case SHIELD_NONE
 		ResetObjectEntity(arrayPos0, TypeName[Blank Object], 0, 0, 0)
 		break
@@ -306,7 +306,7 @@ end function
 
 public function Player_UpdatePhysicsState
 	temp0 = 0
-	switch player[currentPlayer].character
+	switch player[currentPlayer].propertyValue
 	case 0
 		temp0 = 0
 		break
@@ -323,40 +323,40 @@ public function Player_UpdatePhysicsState
 	temp1 = 0
 	if player[currentPlayer].ypos > stage.waterLevel
 		temp1 = 8
-		player[currentPlayer].gravityStrength = 4096
+		player[currentPlayer].value24 = 4096
 	else
-		player[currentPlayer].gravityStrength = 14336
+		player[currentPlayer].value24 = 14336
 	end if
 	switch temp0
 	case 0
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_SonicPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_SonicPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_SonicPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_SonicPhysicsTable)
 		break
 	case 1
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_TailsPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_TailsPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_TailsPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_TailsPhysicsTable)
 		break
 	case 2
-		GetTableValue(player[currentPlayer].topSpeed, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value19, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].acceleration, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value20, temp1, Player_KnucklesPhysicsTable)
 		temp1 += 5
-		GetTableValue(player[currentPlayer].jumpStrength, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value26, temp1, Player_KnucklesPhysicsTable)
 		temp1++
-		GetTableValue(player[currentPlayer].jumpCap, temp1, Player_KnucklesPhysicsTable)
+		GetTableValue(player[currentPlayer].value27, temp1, Player_KnucklesPhysicsTable)
 		break
 	end switch
-	player[currentPlayer].deceleration = player[currentPlayer].acceleration
+	player[currentPlayer].value21 = player[currentPlayer].value20
 end function
 
 // Used by badniks to check if the badnik should be destroyed
@@ -366,7 +366,7 @@ public function Player_BadnikBreak
 	temp0 = checkResult
 	CheckEqual(player[currentPlayer].animation, ANI_SPINDASH)
 	temp0 |= checkResult
-	CheckNotEqual(player[currentPlayer].invincibleTimer, 0)
+	CheckNotEqual(player[currentPlayer].value7, 0)
 	temp0 |= checkResult
 	if warp.timer > 0
 		temp0 |= 1
@@ -384,7 +384,7 @@ public function Player_BadnikBreak
 		player.drawOrder = 4
 		CreateTempObject(TypeName[Smoke Puff], 0, player.xpos, player.ypos)
 		object[tempObjectPos].drawOrder = 4
-		CreateTempObject(TypeName[Object Score], player[currentPlayer].badnikBonus, player.xpos, player.ypos)
+		CreateTempObject(TypeName[Object Score], player[currentPlayer].value18, player.xpos, player.ypos)
 		object[tempObjectPos].drawOrder = 4
 		PlaySfx(SfxName[Destroy], 0)
 		
@@ -392,8 +392,8 @@ public function Player_BadnikBreak
 			if player[currentPlayer].ypos >= player.ypos
 				player[currentPlayer].yvel -= 65536
 			else
-				player[currentPlayer].yvel += player[currentPlayer].gravityStrength
-				player[currentPlayer].yvel += player[currentPlayer].gravityStrength
+				player[currentPlayer].yvel += player[currentPlayer].value24
+				player[currentPlayer].yvel += player[currentPlayer].value24
 				FlipSign(object[currentPlayer].yvel)
 			end if
 		else
@@ -401,7 +401,7 @@ public function Player_BadnikBreak
 		end if
 		temp0 = currentPlayer
 		currentPlayer = 0
-		switch player[currentPlayer].badnikBonus
+		switch player[currentPlayer].value18
 		case 0
 			player.score += 100
 			break
@@ -429,8 +429,8 @@ public function Player_BadnikBreak
 			player.score += 10000
 			break
 		end switch
-		if player[currentPlayer].badnikBonus < 15
-			player[currentPlayer].badnikBonus++
+		if player[currentPlayer].value18 < 15
+			player[currentPlayer].value18++
 		end if
 		currentPlayer = temp0
 	else
@@ -454,8 +454,8 @@ public function Player_Hit
 	if player[currentPlayer].state != Player_State_Death
 		arrayPos0 = player[currentPlayer].entityPos
 		arrayPos0 += playerCount
-		if player[currentPlayer].invincibleTimer == 0
-			if player[currentPlayer].blinkTimer == 0
+		if player[currentPlayer].value7 == 0
+			if player[currentPlayer].value8 == 0
 				player[currentPlayer].state = Player_State_GotHit
 				if player[currentPlayer].xpos > player.xpos
 					player[currentPlayer].speed = 0x20000
@@ -469,14 +469,14 @@ end function
 
 // Only used by R3's Fireball.
 public function Player_FireHit
-	if player[currentPlayer].shield != SHIELD_FIRE
+	if player[currentPlayer].value38 != SHIELD_FIRE
 		if player[currentPlayer].state != Player_State_Death
 
 			arrayPos0 = object[currentPlayer].entityPos
 			arrayPos0 += playerCount
 
-			if player[currentPlayer].invincibleTimer == 0
-				if player[currentPlayer].blinkTimer == 0
+			if player[currentPlayer].value7 == 0
+				if player[currentPlayer].value8 == 0
 					player[currentPlayer].state = Player_State_GotHit
 					if player[currentPlayer].xpos > player.xpos
 						player[currentPlayer].speed = 0x20000
@@ -492,12 +492,12 @@ end function
 
 // Unused in CD18...
 public function Player_LightningHit
-	if player[currentPlayer].shield != SHIELD_LIGHTNING
+	if player[currentPlayer].value38 != SHIELD_LIGHTNING
 		if player[currentPlayer].state != Player_State_Death
 			arrayPos0 = object[currentPlayer].entityPos
 			arrayPos0 += playerCount
-			if player[currentPlayer].invincibleTimer == 0
-				if player[currentPlayer].blinkTimer == 0
+			if player[currentPlayer].value7 == 0
+				if player[currentPlayer].value8 == 0
 					player[currentPlayer].state = Player_State_GotHit
 					if player[currentPlayer].xpos > player.xpos
 						player[currentPlayer].speed = 0x20000
@@ -514,7 +514,7 @@ end function
 // Used by badnik projectiles when on player collision
 // Well, its only used by Kamemusi's shot...
 public function Player_ProjectileHit
-	if player[currentPlayer].shield > SHIELD_NORMAL
+	if player[currentPlayer].value38 > SHIELD_NORMAL
 		temp0 = player[currentPlayer].xpos
 		temp0 -= player.xpos
 		temp1 = player[currentPlayer].ypos
@@ -530,8 +530,8 @@ public function Player_ProjectileHit
 		if object[currentPlayer].state != Player_State_Death
 			arrayPos0 = object[currentPlayer].entityPos
 			arrayPos0 += playerCount
-			if player[currentPlayer].invincibleTimer == 0
-				if player[currentPlayer].blinkTimer == 0
+			if player[currentPlayer].value7 == 0
+				if player[currentPlayer].value8 == 0
 					player[currentPlayer].state = Player_State_GotHit
 					if object[currentPlayer].xpos > player.xpos
 						object[currentPlayer].speed = 0x20000
@@ -555,7 +555,7 @@ public function Player_Kill
 	player[currentPlayer].animation 		= ANI_DYING
 	player[currentPlayer].tileCollisions 	= false
 	player[currentPlayer].interaction 		= false
-	player[currentPlayer].blinkTimer 		= 0
+	player[currentPlayer].value8 		= 0
 	player[currentPlayer].visible 			= true
 	player[currentPlayer].drawOrder 		= 6
 
@@ -578,7 +578,7 @@ public function Player_Kill
 	end if
 	
 	object[arrayPos0].type = TypeName[Blank Object]
-	player[currentPlayer].shield = SHIELD_NONE
+	player[currentPlayer].value38 = SHIELD_NONE
 end function
 
 
@@ -2094,7 +2094,7 @@ public function Player_State_GotHit
 			player.shield = 0
 			PlaySfx(SfxName[Hurt], 0)
 		else
-			if player[0].rings == 0
+			if player[0].value0 == 0
 				if player.blinkTimer != 0
 					PlaySfx(SfxName[Jump], 0)
 				else
@@ -2718,13 +2718,13 @@ event ObjectStartup
 			case 0 // Duo
 				LoadSpriteSheet("Players/Sonic1.gif")
 				LoadAnimation("Sonic.ani")
-				player[0].character = 0
+				player[0].propertyValue = 0
 				player[0].jumpAbility = Player_Action_DblJumpSonic
 				playerCount = 2
 				ResetObjectEntity(1, TypeName[Player 2 Object], 0, object[0].xpos, object[0].ypos)
 				object[1].xpos -= 1048576
 				object[1].groupID = GROUP_PLAYERS
-				player[1].character = 2
+				player[1].propertyValue = 2
 				player[1].isSidekick = true
 				player[1].jumpAbility = Player_Action_DblJumpTails
 				saveRAM[1200] = 0
@@ -2732,19 +2732,19 @@ event ObjectStartup
 			case 1 // Sonic
 				LoadSpriteSheet("Players/Sonic1.gif")
 				LoadAnimation("Sonic.ani")
-				player[0].character = 1
+				player[0].propertyValue = 1
 				player[0].jumpAbility = Player_Action_DblJumpSonic
 				playerCount = 1
 				break
 			case 2 // Tails
-				player[0].character = 2
+				player[0].propertyValue = 2
 				LoadSpriteSheet("Players/Tails1.gif")
 				LoadAnimation("Tails.ani")
 				player[0].jumpAbility = Player_Action_DblJumpTails
 				playerCount = 1
 				break
 			case 3 // Knuckles
-				player[0].character = 3
+				player[0].propertyValue = 3
 				LoadSpriteSheet("Players/Knuckles1.gif")
 				LoadAnimation("Knuckles.ani")
 				player[0].jumpAbility = Player_Action_Glide
