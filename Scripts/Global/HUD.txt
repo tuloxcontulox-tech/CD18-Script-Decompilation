@@ -3,8 +3,8 @@ event ObjectUpdate
 end event
 event ObjectDraw
     switch object[0].propertyValue
-        case 1
         case 0
+        case 1
             DrawSpriteScreenXY(17, 16, 212)
             break
         case 2

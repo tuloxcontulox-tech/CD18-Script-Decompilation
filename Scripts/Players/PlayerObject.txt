@@ -1,4 +1,3 @@
-
 //-------Aliases-------//
 public alias 0 : PLAYER_SONIC_TAILS
 public alias 1 : PLAYER_SONIC
@@ -14,34 +13,29 @@ public alias 46 : ANI_CLIMBING
 public alias 47 : ANI_LEDGE_PULLUP
 public alias 48 : ANI_DROPDASH
 
-public alias Player_State_Ground : 12
-public alias Player_State_Air : 13
-public alias Player_State_Fly : 23
+public alias 12 : Player_State_Ground
+public alias 13 : Player_State_Air
+public alias 23 : Player_State_Fly
 
-reserve function Player_UpdatePhysicsState
-reserve function Player_ProcessUpdate
-reserve function Player_Action_DropDash
 reserve function Player_Action_Glide
 reserve function Player_State_Glide
 reserve function Player_State_GlideDrop
 reserve function Player_State_Climb
 reserve function Player_State_LedgePullUp
 reserve function Player_State_Carried
-reserve function Player_State_Ground
-reserve function Player_State_Air
-reserve function Player_State_Fly
+reserve function Player_Action_DropDash
 
 private table Player_SonicPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
+    0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
+    0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
 end table
 private table Player_TailsPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
+    0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x68000, -0x40000
+    0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x38000, -0x20000
 end table
 private table Player_KnucklesPhysicsTable
-	0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x60000, -0x40000
-	0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x30000, -0x20000
+    0x60000, 0x0C00, 0x1800, 0x0600, 0x08000, 0x0600, -0x60000, -0x40000
+    0x30000, 0x0600, 0x0C00, 0x0300, 0x04000, 0x0300, -0x30000, -0x20000
 end table
 
 public function Player_UpdatePhysicsState
@@ -111,49 +105,48 @@ public function Player_ProcessUpdate
             object.jumpPress |= keyPress[0].buttonB
             object.jumpPress |= keyPress[0].buttonC
         else
-            temp0 = saveRAM[1200]
-            temp0 -= 32
-            temp0 &= 63
-            temp1 = 1000 + temp0
-            temp3 = saveRAM[temp1]
-            temp1 = 1100 + temp0
-            temp4 = saveRAM[temp1]
+            // IA DE TAILS (SISTEMA DE SEGUIMIENTO POR DISTANCIA - MÁXIMA COMPATIBILIDAD)
             object.left = false
             object.right = false
+            object.jumpHold = false
             object.jumpPress = false
-            if object.xpos < temp3
-                object.right = true
-            else
-                if object.xpos > temp3
+
+            temp0 = object.xpos
+            temp0 -= object[0].xpos
+            Abs(temp0)
+
+            if temp0 > 0x300000
+                if object.xpos < object[0].xpos
+                    object.right = true
+                else
                     object.left = true
                 end if
             end if
+
             if object.gravity == 0
-                if object.ypos > temp4
+                if object.ypos > object[0].ypos
                     object.jumpPress = true
                 end if
             else
-                if object.ypos > temp4
+                if object.ypos > object[0].ypos
                     object.jumpHold = true
-                else
-                    object.jumpHold = false
                 end if
             end if
         end if
     else
         ProcessObjectControl()
         if playerCount > 1
-            if object.state == Player_State_Air
-                if object[1].state == Player_State_Fly
+            if object.state == 13
+                if object[1].state == 23
                     if object[1].value14 == false
                         temp0 = object.xpos
                         temp0 -= object[1].xpos
                         Abs(temp0)
-                        if temp0 < 0x100000
+                        if temp0 < 1048576
                             temp0 = object.ypos
                             temp0 -= object[1].ypos
                             Abs(temp0)
-                            if temp0 < 0x180000
+                            if temp0 < 1572864
                                 object.state = Player_State_Carried
                                 object[1].value14 = true
                             end if
@@ -162,33 +155,21 @@ public function Player_ProcessUpdate
                 end if
             end if
         end if
-        if object.entityPos == 0
-            temp0 = saveRAM[1200]
-            temp1 = 1000 + temp0
-            saveRAM[temp1] = object.xpos
-            temp1 = 1100 + temp0
-            saveRAM[temp1] = object.ypos
-            temp0++
-            temp0 &= 63
-            saveRAM[1200] = temp0
-        end if
     end if
 end function
 
 public function Player_Action_DropDash
-    if object.propertyValue < 2
-        if object.animation == 2
-            if object.jumpHold == true
-                object.value2++
-                if object.value2 >= 20
-                    object.animation = 48
-                    if object.value2 == 20
-                        PlaySfx(SfxName[Charge], 0)
-                    end if
+    if object.animation == 2
+        if object.jumpHold == true
+            object.value2++
+            if object.value2 >= 20
+                object.animation = 48
+                if object.value2 == 20
+                    PlaySfx(SfxName[Charge], 0)
                 end if
-            else
-                object.value2 = 0
             end if
+        else
+            object.value2 = 0
         end if
     end if
 end function
@@ -197,18 +178,18 @@ public function Player_Action_Glide
     if object.jumpPress == true
         object.state = Player_State_Glide
         object.animation = 44
-        object.yvel = 0x8000
+        object.yvel = 32768
         if object.direction == 0
-            object.speed = 0x40000
+            object.speed = 262144
         else
-            object.speed = -0x40000
+            object.speed = -262144
         end if
         object.xvel = object.speed
     end if
 end function
 
 public function Player_State_Glide
-    object.yvel = 0x8000
+    object.yvel = 32768
     object.xvel = object.speed
     if object.jumpHold == false
         object.state = Player_State_GlideDrop
@@ -226,7 +207,7 @@ public function Player_State_Glide
         object.xvel = 0
     end if
     if object.gravity == 0
-        object.state = Player_State_Ground
+        object.state = 12
         object.animation = 0
     end if
 end function
@@ -235,7 +216,7 @@ public function Player_State_GlideDrop
     object.yvel += object.value24
     object.xvel = 0
     if object.gravity == 0
-        object.state = Player_State_Ground
+        object.state = 12
         object.animation = 0
     end if
 end function
@@ -244,10 +225,10 @@ public function Player_State_Climb
     object.xvel = 0
     object.yvel = 0
     if object.up == true
-        object.ypos -= 0x10000
+        object.ypos -= 65536
     else
         if object.down == true
-            object.ypos += 0x10000
+            object.ypos += 65536
         end if
     end if
     temp0 = 10
@@ -261,20 +242,20 @@ public function Player_State_Climb
         object.value1 = 0
     end if
     if object.jumpPress == true
-        object.state = Player_State_Air
-        object.yvel = -0x40000
+        object.state = 13
+        object.yvel = -262144
     end if
 end function
 
 public function Player_State_LedgePullUp
     object.value1++
     if object.value1 > 20
-        object.state = Player_State_Ground
-        object.ypos -= 0x180000
+        object.state = 12
+        object.ypos -= 1572864
         if object.direction == 0
-            object.xpos += 0x100000
+            object.xpos += 1048576
         else
-            object.xpos -= 0x100000
+            object.xpos -= 1048576
         end if
     end if
 end function
@@ -282,15 +263,15 @@ end function
 public function Player_State_Carried
     object.xpos = object[0].xpos
     object.ypos = object[0].ypos
-    object.ypos += 0x100000
+    object.ypos += 1048576
     object.direction = object[0].direction
     if object.jumpPress == true
-        object.state = Player_State_Air
-        object.yvel = -0x40000
+        object.state = 13
+        object.yvel = -262144
         object[0].value14 = false
     end if
-    if object[0].state != Player_State_Fly
-        object.state = Player_State_Air
+    if object[0].state != 23
+        object.state = 13
         object[0].value14 = false
     end if
 end function
@@ -311,7 +292,7 @@ event ObjectUpdate
     CallFunction(Player_ProcessUpdate)
     CallFunction(object.state)
     ProcessAnimation()
-    if object.state == Player_State_Air
+    if object.state == 13
         if object.propertyValue < 2
             CallFunction(Player_Action_DropDash)
         else
@@ -320,6 +301,10 @@ event ObjectUpdate
             end if
         end if
     end if
+end event
+
+event ObjectDraw
+    DrawObjectAnimation()
 end event
 
 event ObjectStartup
@@ -347,16 +332,10 @@ event ObjectStartup
             playerCount = 1
             break
     end switch
-    object.state = Player_State_Air
+    object.state = 13
     CallFunction(Player_UpdatePhysicsState)
-    if playerCount > 1
-        // We can't easily CallFunction on another object, but they will update themselves
-    end if
 end event
 
-event ObjectDraw
-    DrawObjectAnimation()
-end event
 event RSDKLoad
     LoadSpriteSheet("Players/Sonic1.gif")
 end event
