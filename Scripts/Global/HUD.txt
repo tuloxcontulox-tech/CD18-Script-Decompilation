@@ -57,9 +57,19 @@ event ObjectDraw
 		DrawSpriteScreenXY(14, temp1, 15)
 		DrawSpriteScreenXY(21, temp1, 31)
 	end if
-	temp0 = object.propertyValue
-	temp0 += 17
-	DrawSpriteScreenXY(temp0, 16, 212)
+		temp0 = object[0].propertyValue
+	switch temp0
+	case 1 // Sonic
+	case 0 // Duo
+		DrawSpriteScreenXY(17, 16, 212)
+		break
+	case 2 // Tails
+		DrawSpriteScreenXY(18, 16, 212)
+		break
+	case 3 // Knuckles
+		DrawSpriteScreenXY(19, 16, 212)
+		break
+	end switch
 	DrawSpriteScreenXY(14, 32, 220)
 	if player.lives < 10
 		DrawNumbers(0, 40, 217, player.lives, 1, 8, 1)
@@ -120,8 +130,9 @@ event ObjectStartup
 	SpriteFrame(0, 0, 32, 16, 123, 67)
 	SpriteFrame(0, 0, 16, 16, 187, 189)
 	SpriteFrame(0, 0, 16, 16, 204, 189)
-	SpriteFrame(0, 0, 16, 16, 237, 223)
-	SpriteFrame(0, 0, 16, 16, 237, 223)
+	SpriteFrame(0, 0, 16, 16, 187, 189) // Sonic
+	SpriteFrame(0, 0, 16, 16, 204, 189) // Tails
+	SpriteFrame(0, 0, 16, 16, 221, 189) // Knuckles
 	SpriteFrame(0, 0, 8, 8, 10, 98)
 end event
 
