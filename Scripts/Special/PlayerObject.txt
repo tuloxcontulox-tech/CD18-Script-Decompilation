@@ -808,6 +808,10 @@ event ObjectUpdate
 	tileLayer[0].ypos = object.ypos
 	tileLayer[0].ypos /= 3
 	tileLayer[0].ypos += 5767168
+	tileLayer[1].angle = tileLayer[0].angle
+	tileLayer[1].xpos = tileLayer[0].xpos
+	tileLayer[1].zpos = tileLayer[0].zpos
+	tileLayer[1].ypos = tileLayer[0].ypos
 end event
 
 
