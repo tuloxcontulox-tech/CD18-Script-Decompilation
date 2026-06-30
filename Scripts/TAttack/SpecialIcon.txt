@@ -198,21 +198,25 @@ event ObjectStartup
 	SpriteFrame(-32, 31, 64, 13, 70, 652)
 	SpriteFrame(-35, -46, 70, 92, 441, 860)
 	SpriteFrame(-29, -22, 56, 21, 223, 679)
-	arrayPos0 = 32
-	while arrayPos0 < 1056
-		if object[arrayPos0].type == TypeName[Special Icon]
-			object[arrayPos0].frame = object[arrayPos0].propertyValue
-			object[arrayPos0].frame += 11
-			object[arrayPos0].rotation = object[arrayPos0].propertyValue
-			object[arrayPos0].rotation <<= 8
-			if object[arrayPos0].propertyValue > 3
-				object[arrayPos0].rotation += 256
-			end if
+	foreach (TypeName[Special Icon], arrayPos0, ALL_ENTITIES)
+		object[arrayPos0].frame = object[arrayPos0].propertyValue
+		object[arrayPos0].frame += 11
+		object[arrayPos0].rotation = object[arrayPos0].propertyValue
+		object[arrayPos0].rotation <<= 8
+		if object[arrayPos0].propertyValue > 3
+			object[arrayPos0].rotation += 256
 		end if
-		arrayPos0++
-	loop
+	next
 	scene3D.vertexCount = 4
 	scene3D.faceCount = 1
+	vertex3D[0].x = -32
+	vertex3D[0].y = -43
+	vertex3D[1].x = 31
+	vertex3D[1].y = -43
+	vertex3D[2].x = 31
+	vertex3D[2].y = 24
+	vertex3D[3].x = -32
+	vertex3D[3].y = 24
 	faceBuffer[0].a = 0
 	faceBuffer[0].b = 1
 	faceBuffer[0].c = 2

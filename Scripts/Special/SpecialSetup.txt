@@ -125,6 +125,7 @@ end event
 event ObjectStartup
 	LoadSpriteSheet("Special/Objects.gif")
 	tileLayer[0].type = TILELAYER_3DSKY
+	tileLayer[1].type = TILELAYER_3DFLOOR
 	if options.soundtrack == 0
 		SetMusicTrack("JP/Specialstage.ogg", 0, 1)
 		SetMusicTrack("JP/ZoneComplete.ogg", 1, 0)
