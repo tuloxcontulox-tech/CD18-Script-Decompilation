@@ -98,6 +98,9 @@ event ObjectDraw
 		vertexBuffer[0].v -= 43
 		vertexBuffer[1].x = object.xpos
 		vertexBuffer[1].x >>= 16
+		vertexBuffer[1].x += 31
+		vertexBuffer[1].u = temp0
+		vertexBuffer[1].u += 31
 		vertexBuffer[1].y = vertexBuffer[0].y
 		vertexBuffer[1].v = vertexBuffer[0].v
 		vertexBuffer[2].x = vertexBuffer[0].x
@@ -208,6 +211,13 @@ event ObjectStartup
 		end if
 		arrayPos0++
 	loop
+	scene3D.vertexCount = 4
+	scene3D.faceCount = 1
+	faceBuffer[0].a = 0
+	faceBuffer[0].b = 1
+	faceBuffer[0].c = 2
+	faceBuffer[0].d = 3
+	faceBuffer[0].flag = 1
 end event
 
 event RSDKDraw
