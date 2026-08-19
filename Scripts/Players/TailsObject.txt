@@ -213,6 +213,8 @@ event ObjectDraw
 	case 43
 		temp0 = object.value11
 		temp0 >>= 2
+		temp0 %= 3
+		temp0 += 5
 		CheckEqual(object.xvel, 0)
 		temp1 = checkResult
 		CheckEqual(object.yvel, 0)
@@ -220,65 +222,11 @@ event ObjectDraw
 		temp2 = object.rotation
 		if temp1 == 0
 			ATan2(object.rotation, object.xvel, object.yvel)
-			object.rotation += 16
-			object.rotation &= 255
-			object.rotation >>= 5
-			switch object.rotation
-			case 0
-			case 8
-				temp0 += 5
-				object.rotation = 0
-				break
-			case 1
-				temp0 += 8
-				if object.direction == 0
-					object.rotation = 64
-				else
-					object.rotation = 0
-				end if
-				break
-			case 2
-				temp0 += 5
-				object.rotation = 64
-				break
-			case 3
-				temp0 += 8
-				if object.direction == 0
-					object.rotation = 128
-				else
-					object.rotation = 64
-				end if
-				break
-			case 4
-				temp0 += 5
-				object.rotation = 128
-				break
-			case 5
-				temp0 += 8
-				if object.direction == 0
-					object.rotation = 192
-				else
-					object.rotation = 128
-				end if
-				break
-			case 6
-				temp0 += 5
-				object.rotation = 192
-				break
-			case 7
-				temp0 += 8
-				if object.direction == 0
-					object.rotation = 0
-				else
-					object.rotation = 192
-				end if
-				break
-			end switch
 			if object.direction == 1
 				object.rotation += 128
 			end if
+			object.rotation &= 255
 		else
-			temp0 += 5
 			object.rotation = 0
 		end if
 		object.rotation <<= 1
