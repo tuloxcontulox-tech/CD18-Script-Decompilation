@@ -188,6 +188,8 @@ end function
 
 
 event ObjectUpdate
+	scene3D.vertexCount = 0
+	scene3D.faceCount = 0
 	switch object.state
 	case 0
 		stage.debugMode = 0
