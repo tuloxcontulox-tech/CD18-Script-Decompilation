@@ -12,7 +12,11 @@
 
 
 event ObjectDraw
-	DrawRect(0, 0, screen.xsize, screen.ysize, 0, 0, 96, 255)
+	if object.state == 1
+		DrawRect(0, 0, screen.xsize, screen.ysize, 0, 0, 0, 255)
+	else
+		DrawRect(0, 0, screen.xsize, screen.ysize, 0, 0, 96, 255)
+	end if
 	switch object.state
 	case 0
 		if object.alpha > 8
