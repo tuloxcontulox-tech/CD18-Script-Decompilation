@@ -62,7 +62,14 @@ end event
 
 
 event ObjectDraw
-	DrawRect(0, 0, screen.xsize, screen.ysize, 0, 0, 96, 255)
+	if object.state == 3
+		temp0 = object.alpha
+		temp0 *= 96
+		temp0 >>= 8
+	else
+		temp0 = 96
+	end if
+	DrawRect(0, 0, screen.xsize, screen.ysize, 0, 0, temp0, 255)
 	if object.alpha > 8
 		DrawSpriteFX(0, FX_INK, object.xpos, object.ypos)
 	end if
