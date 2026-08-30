@@ -690,29 +690,33 @@ event ObjectDraw
 	case MENU_MAIN
 		temp0 = screen.xcenter
 		// object.value1: 0 = EMPEZAR PARTIDA, 1 = CONTRARRELOJ, 2 = BANDAS SONORAS, 3 = EXTRAS, 4 = SALIR DEL JUEGO
+		temp1 = temp0
+		temp1 -= 72
+		temp2 = temp0
+		temp2 += 72
 		if object.value1 == 0
 			DrawSpriteScreenXY(12, temp0, 205)
-			DrawSpriteScreenXY(13, temp0 - 72, 205)
-			DrawSpriteScreenXY(14, temp0 + 72, 205)
+			DrawSpriteScreenXY(13, temp1, 205)
+			DrawSpriteScreenXY(14, temp2, 205)
 		else
 			if object.value1 == 1
 				DrawSpriteScreenXY(4, temp0, 205)
-				DrawSpriteScreenXY(13, temp0 - 72, 205)
-				DrawSpriteScreenXY(14, temp0 + 72, 205)
+				DrawSpriteScreenXY(13, temp1, 205)
+				DrawSpriteScreenXY(14, temp2, 205)
 			else
 				if object.value1 == 2
 					DrawSpriteScreenXY(6, temp0, 205)
-					DrawSpriteScreenXY(13, temp0 - 72, 205)
-					DrawSpriteScreenXY(14, temp0 + 72, 205)
+					DrawSpriteScreenXY(13, temp1, 205)
+					DrawSpriteScreenXY(14, temp2, 205)
 				else
 					if object.value1 == 3
 						DrawSpriteScreenXY(10, temp0, 205)
-						DrawSpriteScreenXY(13, temp0 - 72, 205)
-						DrawSpriteScreenXY(14, temp0 + 72, 205)
+						DrawSpriteScreenXY(13, temp1, 205)
+						DrawSpriteScreenXY(14, temp2, 205)
 					else
 						DrawSpriteScreenXY(8, temp0, 205)
-						DrawSpriteScreenXY(13, temp0 - 72, 205)
-						DrawSpriteScreenXY(14, temp0 + 72, 205)
+						DrawSpriteScreenXY(13, temp1, 205)
+						DrawSpriteScreenXY(14, temp2, 205)
 					end if
 				end if
 			end if
@@ -720,33 +724,45 @@ event ObjectDraw
 		break
 	case MENU_SOUNDTRACK
 		temp0 = screen.xcenter
+		temp1 = temp0
+		temp1 -= 40
+		temp2 = temp0
+		temp2 -= 45
+		temp3 = temp0
+		temp3 += 45
+		temp4 = temp0
+		temp4 += 80
 		// Draw Header BANDAS SONORAS
-		DrawSpriteScreenXY(24, temp0 - 40, 60)
+		DrawSpriteScreenXY(24, temp1, 60)
 		// Draw Eggman DJ
 		DrawSpriteScreenXY(25, temp0, 110)
 		// Draw JP Button
 		if options.soundtrack == 0
-			DrawSpriteScreenXY(26, temp0 - 45, 160)
+			DrawSpriteScreenXY(26, temp2, 160)
 		else
-			DrawSpriteScreenXY(27, temp0 - 45, 160)
+			DrawSpriteScreenXY(27, temp2, 160)
 		end if
 		// Draw US Button
 		if options.soundtrack == 1
-			DrawSpriteScreenXY(28, temp0 + 45, 160)
+			DrawSpriteScreenXY(28, temp3, 160)
 		else
-			DrawSpriteScreenXY(29, temp0 + 45, 160)
+			DrawSpriteScreenXY(29, temp3, 160)
 		end if
 		// Draw ATRÁS Button
 		if object.value2 == 2
-			DrawSpriteScreenXY(31, temp0 + 80, 215)
+			DrawSpriteScreenXY(31, temp4, 215)
 		else
-			DrawSpriteScreenXY(30, temp0 + 80, 215)
+			DrawSpriteScreenXY(30, temp4, 215)
 		end if
 		break
 	case MENU_EXTRAS
 		temp0 = screen.xcenter
+		temp1 = temp0
+		temp1 -= 40
+		temp2 = temp0
+		temp2 += 80
 		// Draw Header EXTRAS
-		DrawSpriteScreenXY(23, temp0 - 40, 45)
+		DrawSpriteScreenXY(23, temp1, 45)
 		// D. A. GARDEN
 		if object.value2 == 0
 			DrawSpriteScreenXY(16, temp0, 85)
@@ -773,53 +789,61 @@ event ObjectDraw
 		end if
 		// ATRÁS
 		if object.value2 == 4
-			DrawSpriteScreenXY(31, temp0 + 80, 215)
+			DrawSpriteScreenXY(31, temp2, 215)
 		else
-			DrawSpriteScreenXY(30, temp0 + 80, 215)
+			DrawSpriteScreenXY(30, temp2, 215)
 		end if
 		break
 	case MENU_VISUALMODE
 		temp0 = screen.xcenter
+		temp1 = temp0
+		temp1 -= 40
+		temp2 = temp0
+		temp2 -= 60
+		temp3 = temp0
+		temp3 += 60
+		temp4 = temp0
+		temp4 += 80
 		// Header EXTRAS
-		DrawSpriteScreenXY(23, temp0 - 40, 40)
+		DrawSpriteScreenXY(23, temp1, 40)
 
 		// Thumbnail 0: COMIENZO
-		DrawSpriteScreenXY(32, temp0 - 60, 90)
+		DrawSpriteScreenXY(32, temp2, 90)
 		if object.value3 == 0
-			DrawSpriteScreenXY(37, temp0 - 60, 120)
+			DrawSpriteScreenXY(37, temp2, 120)
 		else
-			DrawSpriteScreenXY(36, temp0 - 60, 120)
+			DrawSpriteScreenXY(36, temp2, 120)
 		end if
 
 		// Thumbnail 1: ANIMACIÓN A LÁPIZ
-		DrawSpriteScreenXY(33, temp0 + 60, 90)
+		DrawSpriteScreenXY(33, temp3, 90)
 		if object.value3 == 1
-			DrawSpriteScreenXY(39, temp0 + 60, 120)
+			DrawSpriteScreenXY(39, temp3, 120)
 		else
-			DrawSpriteScreenXY(38, temp0 + 60, 120)
+			DrawSpriteScreenXY(38, temp3, 120)
 		end if
 
 		// Thumbnail 2: BUEN FINAL
-		DrawSpriteScreenXY(34, temp0 - 60, 150)
+		DrawSpriteScreenXY(34, temp2, 150)
 		if object.value3 == 2
-			DrawSpriteScreenXY(41, temp0 - 60, 180)
+			DrawSpriteScreenXY(41, temp2, 180)
 		else
-			DrawSpriteScreenXY(40, temp0 - 60, 180)
+			DrawSpriteScreenXY(40, temp2, 180)
 		end if
 
 		// Thumbnail 3: MAL FINAL
-		DrawSpriteScreenXY(35, temp0 + 60, 150)
+		DrawSpriteScreenXY(35, temp3, 150)
 		if object.value3 == 3
-			DrawSpriteScreenXY(43, temp0 + 60, 180)
+			DrawSpriteScreenXY(43, temp3, 180)
 		else
-			DrawSpriteScreenXY(42, temp0 + 60, 180)
+			DrawSpriteScreenXY(42, temp3, 180)
 		end if
 
 		// ATRÁS
 		if object.value3 == 4
-			DrawSpriteScreenXY(31, temp0 + 80, 215)
+			DrawSpriteScreenXY(31, temp4, 215)
 		else
-			DrawSpriteScreenXY(30, temp0 + 80, 215)
+			DrawSpriteScreenXY(30, temp4, 215)
 		end if
 		break
 	end switch
