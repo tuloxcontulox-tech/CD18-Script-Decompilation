@@ -44,6 +44,7 @@ private alias 10 : MENU_MAIN
 private alias 11 : MENU_SOUNDTRACK
 private alias 12 : MENU_EXTRAS
 private alias 13 : MENU_VISUALMODE
+private alias 14 : MENU_EXIT
 
 
 
@@ -278,6 +279,9 @@ event ObjectUpdate
 		if checkResult > -1
 			object.state = MENU_MAIN
 			object.value1 = 0
+			object.value4 = 0
+			object.value5 = 0
+			LoadSpriteSheet("Title/Menu.gif")
 			PlaySfx(SfxName[Select], 0)
 		else
 			object.value4++
@@ -287,72 +291,74 @@ event ObjectUpdate
 		end if
 		break
 	case MENU_MAIN
-		if keyPress[0].up == true
-			object.value1--
-			if object.value1 < 0
-				object.value1 = 4
+		if object.value5 > 0
+			object.value5--
+		else
+			if keyPress[0].left == true
+				if object.value1 > 0
+					object.value1--
+					object.value4 = 1 // moving left
+					object.value5 = 15 // 0.25 second transition (15 frames)
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
 			end if
-			PlaySfx(SfxName[Menu Button], 0)
-		end if
-		if keyPress[0].down == true
-			object.value1++
-			if object.value1 > 4
-				object.value1 = 0
+			if keyPress[0].right == true
+				if object.value1 < 4
+					object.value1++
+					object.value4 = 2 // moving right
+					object.value5 = 15 // 0.25 second transition (15 frames)
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
 			end if
-			PlaySfx(SfxName[Menu Button], 0)
-		end if
-		if keyPress[0].left == true
-			object.value1--
-			if object.value1 < 0
-				object.value1 = 4
+			if keyPress[0].buttonB == true
+				PlaySfx(SfxName[Back Button], 0)
+				object.state = START_SETUP
+				LoadSpriteSheet("Title/Title.gif")
 			end if
-			PlaySfx(SfxName[Menu Button], 0)
-		end if
-		if keyPress[0].right == true
-			object.value1++
-			if object.value1 > 4
-				object.value1 = 0
+			checkResult = false
+			if keyPress[0].start == true
+				checkResult = true
 			end if
-			PlaySfx(SfxName[Menu Button], 0)
+			if keyPress[0].buttonA == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonC == true
+				checkResult = true
+			end if
+			if checkResult == true
+				PlaySfx(SfxName[Select], 0)
+				switch object.value1
+				case 0
+					object.state = START_NEWGAME
+					StopMusic()
+					break
+				case 1
+					stage.activeList = PRESENTATION_STAGE
+					stage.listPos = 2
+					LoadStage()
+					break
+				case 2
+					object.state = MENU_SOUNDTRACK
+					object.value2 = 0
+					break
+				case 3
+					object.state = MENU_EXTRAS
+					object.value2 = 0
+					break
+				case 4
+					object.state = MENU_EXIT
+					screen.fade = 0
+					break
+				end switch
+			end if
 		end if
-		if keyPress[0].buttonB == true
-			PlaySfx(SfxName[Back Button], 0)
-			object.state = START_SETUP
-		end if
-		checkResult = false
-		if keyPress[0].start == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonA == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonC == true
-			checkResult = true
-		end if
-		if checkResult == true
-			PlaySfx(SfxName[Select], 0)
-			switch object.value1
-			case 0
-				object.state = START_NEWGAME
-				StopMusic()
-				break
-			case 1
-				stage.activeList = PRESENTATION_STAGE
-				stage.listPos = 2
-				LoadStage()
-				break
-			case 2
-				object.state = MENU_SOUNDTRACK
-				object.value2 = 0
-				break
-			case 3
-				object.state = MENU_EXTRAS
-				object.value2 = 0
-				break
-			case 4
-				engine.state = 8
-				break
-			end switch
+		break
+	case MENU_EXIT
+		if screen.fade < 256
+			screen.fade += 4
+			SetScreenFade(0, 0, 0, screen.fade)
+		else
+			engine.state = 8
 		end if
 		break
 	case MENU_SOUNDTRACK
@@ -689,34 +695,86 @@ event ObjectDraw
 		break
 	case MENU_MAIN
 		temp0 = screen.xcenter
-		// object.value1: 0 = EMPEZAR PARTIDA, 1 = CONTRARRELOJ, 2 = BANDAS SONORAS, 3 = EXTRAS, 4 = SALIR DEL JUEGO
-		temp1 = temp0
-		temp1 -= 72
-		temp2 = temp0
-		temp2 += 72
-		if object.value1 == 0
-			DrawSpriteScreenXY(12, temp0, 205)
-			DrawSpriteScreenXY(13, temp1, 205)
-			DrawSpriteScreenXY(14, temp2, 205)
+		if object.value5 > 0
+			// Slide animation active
+			temp1 = object.value5
+			temp1 *= 10
+			if object.value4 == 1
+				// Moving left
+				temp2 = temp0
+				temp2 -= temp1
+				temp3 = temp2
+				temp3 += 150
+			else
+				// Moving right
+				temp2 = temp0
+				temp2 += temp1
+				temp3 = temp2
+				temp3 -= 150
+			end if
+			// Draw active option sliding
+			switch object.value1
+			case 0
+				DrawSpriteScreenXY(12, temp2, 205)
+				DrawSpriteScreenXY(3, temp3, 205)
+				break
+			case 1
+				DrawSpriteScreenXY(4, temp2, 205)
+				if object.value4 == 1
+					DrawSpriteScreenXY(11, temp3, 205)
+				else
+					DrawSpriteScreenXY(5, temp3, 205)
+				end if
+				break
+			case 2
+				DrawSpriteScreenXY(6, temp2, 205)
+				if object.value4 == 1
+					DrawSpriteScreenXY(3, temp3, 205)
+				else
+					DrawSpriteScreenXY(9, temp3, 205)
+				end if
+				break
+			case 3
+				DrawSpriteScreenXY(10, temp2, 205)
+				if object.value4 == 1
+					DrawSpriteScreenXY(5, temp3, 205)
+				else
+					DrawSpriteScreenXY(7, temp3, 205)
+				end if
+				break
+			case 4
+				DrawSpriteScreenXY(8, temp2, 205)
+				DrawSpriteScreenXY(9, temp3, 205)
+				break
+			end switch
 		else
-			if object.value1 == 1
-				DrawSpriteScreenXY(4, temp0, 205)
-				DrawSpriteScreenXY(13, temp1, 205)
+			temp1 = temp0
+			temp1 -= 72
+			temp2 = temp0
+			temp2 += 72
+			// Draw static option
+			if object.value1 == 0
+				DrawSpriteScreenXY(12, temp0, 205)
 				DrawSpriteScreenXY(14, temp2, 205)
 			else
-				if object.value1 == 2
-					DrawSpriteScreenXY(6, temp0, 205)
+				if object.value1 == 1
+					DrawSpriteScreenXY(4, temp0, 205)
 					DrawSpriteScreenXY(13, temp1, 205)
 					DrawSpriteScreenXY(14, temp2, 205)
 				else
-					if object.value1 == 3
-						DrawSpriteScreenXY(10, temp0, 205)
+					if object.value1 == 2
+						DrawSpriteScreenXY(6, temp0, 205)
 						DrawSpriteScreenXY(13, temp1, 205)
 						DrawSpriteScreenXY(14, temp2, 205)
 					else
-						DrawSpriteScreenXY(8, temp0, 205)
-						DrawSpriteScreenXY(13, temp1, 205)
-						DrawSpriteScreenXY(14, temp2, 205)
+						if object.value1 == 3
+							DrawSpriteScreenXY(10, temp0, 205)
+							DrawSpriteScreenXY(13, temp1, 205)
+							DrawSpriteScreenXY(14, temp2, 205)
+						else
+							DrawSpriteScreenXY(8, temp0, 205)
+							DrawSpriteScreenXY(13, temp1, 205)
+						end if
 					end if
 				end if
 			end if
