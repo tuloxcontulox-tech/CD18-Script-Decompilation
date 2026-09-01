@@ -365,6 +365,13 @@ event ObjectUpdate
 			engine.state = 8
 		end if
 		break
+	case MENU_EXIT
+		temp0 = screen.xcenter
+		temp1 = temp0
+		temp1 -= 72
+		DrawSpriteScreenXY(8, temp0, 205)
+		DrawSpriteScreenXY(13, temp1, 205)
+		break
 	case MENU_SOUNDTRACK
 		if keyPress[0].left == true
 			if object.value2 != 0
@@ -729,10 +736,10 @@ event ObjectDraw
 			if object.value4 == 1
 				// Moving left (to previous option)
 				// Current option slides out to the right: temp0 + (270 - temp7)
-				temp8 = 270
-				temp8 -= temp7
+				temp3 = 270
+				temp3 -= temp7
 				temp4 = temp0
-				temp4 += temp8
+				temp4 += temp3
 
 				// Incoming option slides in from the left: temp0 - temp7
 				temp5 = temp0
@@ -740,10 +747,10 @@ event ObjectDraw
 			else
 				// Moving right (to next option)
 				// Current option slides out to the left: temp0 - (270 - temp7)
-				temp8 = 270
-				temp8 -= temp7
+				temp3 = 270
+				temp3 -= temp7
 				temp4 = temp0
-				temp4 -= temp8
+				temp4 -= temp3
 
 				// Incoming option slides in from the right: temp0 + temp7
 				temp5 = temp0
@@ -759,25 +766,25 @@ event ObjectDraw
 			case 1
 				DrawSpriteScreenXY(4, temp5, 205)  // CONTRARRELOJ incoming
 				if object.value4 == 1
-					DrawSpriteScreenXY(11, temp4, 205) // EMPEZAR PARTIDA outgoing
-				else
 					DrawSpriteScreenXY(5, temp4, 205)  // BANDAS SONORAS outgoing
+				else
+					DrawSpriteScreenXY(11, temp4, 205) // EMPEZAR PARTIDA outgoing
 				end if
 				break
 			case 2
 				DrawSpriteScreenXY(6, temp5, 205)  // BANDAS SONORAS incoming
 				if object.value4 == 1
-					DrawSpriteScreenXY(3, temp4, 205)  // CONTRARRELOJ outgoing
-				else
 					DrawSpriteScreenXY(9, temp4, 205)  // EXTRAS outgoing
+				else
+					DrawSpriteScreenXY(3, temp4, 205)  // CONTRARRELOJ outgoing
 				end if
 				break
 			case 3
 				DrawSpriteScreenXY(10, temp5, 205) // EXTRAS incoming
 				if object.value4 == 1
-					DrawSpriteScreenXY(5, temp4, 205)  // BANDAS SONORAS outgoing
-				else
 					DrawSpriteScreenXY(7, temp4, 205)  // SALIR DEL JUEGO outgoing
+				else
+					DrawSpriteScreenXY(5, temp4, 205)  // BANDAS SONORAS outgoing
 				end if
 				break
 			case 4
@@ -813,6 +820,13 @@ event ObjectDraw
 				end if
 			end if
 		end if
+		break
+	case MENU_EXIT
+		temp0 = screen.xcenter
+		temp1 = temp0
+		temp1 -= 72
+		DrawSpriteScreenXY(8, temp0, 205)
+		DrawSpriteScreenXY(13, temp1, 205)
 		break
 	case MENU_SOUNDTRACK
 		temp0 = screen.xcenter
