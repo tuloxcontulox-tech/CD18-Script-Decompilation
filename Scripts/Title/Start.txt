@@ -864,39 +864,42 @@ event ObjectDraw
 		Sin(temp5, object.value8)
 		temp5 >>= 6
 		temp6 = 72
-		temp6 += temp5 // Left note Y
+		temp6 += temp5 // Oscillating Y 1
 		temp7 = 72
-		temp7 -= temp5 // Right note Y
+		temp7 -= temp5 // Oscillating Y 2
 
-		temp3 = temp0
-		temp3 -= 35 // Left note X
-		temp4 = temp0
-		temp4 += 35 // Right note X
+		// Oscillating music notes left and right
+		temp1 = temp0
+		temp1 -= 32
+		DrawSpriteScreenXY(47, temp1, temp6) // Single Note 1
 
-		DrawSpriteScreenXY(47, temp3, temp6) // Music Note 1
-		DrawSpriteScreenXY(48, temp4, temp7) // Music Note 2
+		temp1 = temp0
+		temp1 -= 24
+		DrawSpriteScreenXY(48, temp1, temp7) // Single Note 2
 
-		temp4 = temp0
-		temp4 += 110
+		temp1 = temp0
+		temp1 += 24
+		DrawSpriteScreenXY(50, temp1, temp6) // Single Note 3
 
-		// Draw JP Button (Uses small 48x48 frame 49 when selected)
+		temp1 = temp0
+		temp1 += 32
+		DrawSpriteScreenXY(51, temp1, temp7) // Double Note 4
+
+		temp1 = temp0
+		temp1 -= 110
+
+		// Draw JP Button (Red = 27 inactive when not hovering, Orange = 26 active when hovering)
 		if object.value2 == 0
-			DrawSpriteScreenXY(49, temp2, 135)
-		end if
-		if options.soundtrack == 0
-			DrawSpriteScreenXY(26, temp2, 135)
+			DrawSpriteScreenXY(26, temp2, 135) // Orange JP
 		else
-			DrawSpriteScreenXY(27, temp2, 135)
+			DrawSpriteScreenXY(27, temp2, 135) // Red JP
 		end if
 
-		// Draw US Button (Uses small 48x48 frame 49 when selected)
+		// Draw US Button (Red = 29 inactive when not hovering, Orange = 28 active when hovering)
 		if object.value2 == 1
-			DrawSpriteScreenXY(49, temp3, 135)
-		end if
-		if options.soundtrack == 1
-			DrawSpriteScreenXY(28, temp3, 135)
+			DrawSpriteScreenXY(28, temp3, 135) // Orange US
 		else
-			DrawSpriteScreenXY(29, temp3, 135)
+			DrawSpriteScreenXY(29, temp3, 135) // Red US
 		end if
 
 		// Draw ATRÁS Button
@@ -1100,14 +1103,14 @@ event ObjectStartup
 	SpriteFrame(-90, -15, 180, 30, 258, 774)
 	// 25: Eggman DJ Frame 0 (2, 942, 40, 40)
 	SpriteFrame(-20, -20, 40, 40, 2, 942)
-	// 26: JP Active (43, 920, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 43, 920)
-	// 27: JP Inactive (43, 945, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 43, 945)
-	// 28: US Active (108, 920, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 108, 920)
-	// 29: US Inactive (108, 945, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 108, 945)
+	// 26: JP Active Orange (43, 964, 64, 21)
+	SpriteFrame(-32, -10, 64, 21, 43, 964)
+	// 27: JP Inactive Red (43, 942, 64, 21)
+	SpriteFrame(-32, -10, 64, 21, 43, 942)
+	// 28: US Active Orange (108, 964, 64, 21)
+	SpriteFrame(-32, -10, 64, 21, 108, 964)
+	// 29: US Inactive Red (108, 942, 64, 21)
+	SpriteFrame(-32, -10, 64, 21, 108, 942)
 	// 30: ATRAS Inactive (254, 920, 62, 24)
 	SpriteFrame(-31, -12, 62, 24, 254, 920)
 	// 31: ATRAS Active (254, 945, 62, 24)
@@ -1143,12 +1146,16 @@ event ObjectStartup
 	SpriteFrame(-125, -18, 250, 37, 4, 904)
 	// 46: Eggman DJ Frame 1 (2, 984, 40, 40)
 	SpriteFrame(-20, -20, 40, 40, 2, 984)
-	// 47: Music Note 1 (62, 986, 10, 12)
-	SpriteFrame(-5, -6, 10, 12, 62, 986)
-	// 48: Music Note 2 (222, 975, 12, 12)
-	SpriteFrame(-6, -6, 12, 12, 222, 975)
+	// 47: Music Note 1 (43, 986, 4, 12)
+	SpriteFrame(-2, -6, 4, 12, 43, 986)
+	// 48: Music Note 2 (50, 993, 4, 12)
+	SpriteFrame(-2, -6, 4, 12, 50, 993)
 	// 49: Small 48x48 Selection Frame (173, 942, 48, 48)
 	SpriteFrame(-24, -24, 48, 48, 173, 942)
+	// 50: Music Note 3 (55, 990, 4, 12)
+	SpriteFrame(-2, -6, 4, 12, 55, 990)
+	// 51: Double Music Note 4 (62, 986, 10, 12)
+	SpriteFrame(-5, -6, 10, 12, 62, 986)
 
 	options.touchControls = false
 end event
