@@ -415,11 +415,15 @@ event ObjectUpdate
 		if checkResult == true
 			if object.value2 == 0
 				options.soundtrack = 0
+				saveRAM[38] = options.soundtrack
+				WriteSaveRAM()
 				PlaySfx(SfxName[Select], 0)
 				PlayMusic(options.soundtrack)
 			else
 				if object.value2 == 1
 					options.soundtrack = 1
+					saveRAM[38] = options.soundtrack
+					WriteSaveRAM()
 					PlaySfx(SfxName[Select], 0)
 					PlayMusic(options.soundtrack)
 				else
@@ -1024,6 +1028,11 @@ end event
 
 
 event ObjectStartup
+	ReadSaveRAM()
+	if saveRAM[38] > 1
+		saveRAM[38] = 0
+	end if
+	options.soundtrack = saveRAM[38]
 	LoadSpriteSheet("Title/Title.gif")
 	switch engine.language
 	case LANGUAGE_EN
