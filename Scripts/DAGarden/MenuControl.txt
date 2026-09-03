@@ -356,11 +356,7 @@ event ObjectUpdate
 		if object.fade < 384
 			object.fade += 8
 		else
-		// CD11 Leftover:
-		// Inside the GameConfig, ID 1 leads to the Menu
-		// However, in CD18, "MENU" just redirects to the Title Screen
-			stage.listPos = STAGE_P_MENU
-			LoadStage()
+			engine.state = 8
 		end if
 		SetScreenFade(0, 0, 0, object.fade)
 		break
