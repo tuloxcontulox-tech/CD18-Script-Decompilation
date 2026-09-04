@@ -857,7 +857,7 @@ event ObjectDraw
 			object.value7 = 0
 		end if
 		if object.value7 < 32
-			DrawSpriteScreenXY(25, temp0, 72) // Eggman DJ Frame 0
+			DrawSpriteScreenXY(25, temp0, 71) // Eggman DJ Frame 0
 		else
 			DrawSpriteScreenXY(46, temp0, 72) // Eggman DJ Frame 1
 		end if
@@ -926,27 +926,34 @@ event ObjectDraw
 		// Draw Header EXTRAS at bottom left
 		DrawSpriteScreenXY(23, temp1, 215)
 
-		// Draw 4 options (All white text: 15, 17, 19, 21)
-		// Selected option has 250x37 dark grey selection frame behind it!
+		// Draw 4 options (Selected option has dark grey frame 45 and yellow text! Unselected has white text!)
 		if object.value2 == 0
 			DrawSpriteScreenXY(45, temp0, 62)
+			DrawSpriteScreenXY(16, temp0, 62) // D. A. GARDEN (yellow)
+		else
+			DrawSpriteScreenXY(15, temp0, 62) // D. A. GARDEN (white)
 		end if
-		DrawSpriteScreenXY(15, temp0, 62) // D. A. GARDEN
 
 		if object.value2 == 1
 			DrawSpriteScreenXY(45, temp0, 98)
+			DrawSpriteScreenXY(18, temp0, 98) // MODO VISUAL (yellow)
+		else
+			DrawSpriteScreenXY(17, temp0, 98) // MODO VISUAL (white)
 		end if
-		DrawSpriteScreenXY(17, temp0, 98) // MODO VISUAL
 
 		if object.value2 == 2
 			DrawSpriteScreenXY(45, temp0, 134)
+			DrawSpriteScreenXY(20, temp0, 134) // PRUEBA DE SONIDO (yellow)
+		else
+			DrawSpriteScreenXY(19, temp0, 134) // PRUEBA DE SONIDO (white)
 		end if
-		DrawSpriteScreenXY(19, temp0, 134) // PRUEBA DE SONIDO
 
 		if object.value2 == 3
 			DrawSpriteScreenXY(45, temp0, 170)
+			DrawSpriteScreenXY(22, temp0, 170) // SELECCIONAR FASE (yellow)
+		else
+			DrawSpriteScreenXY(21, temp0, 170) // SELECCIONAR FASE (white)
 		end if
-		DrawSpriteScreenXY(21, temp0, 170) // SELECCIONAR FASE
 
 		// Draw ATRÁS Button at bottom right
 		if object.value2 == 4
@@ -1087,25 +1094,25 @@ event ObjectStartup
 	// 12: EMPEZAR PARTIDA selected (128, 68, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 128, 68)
 	// 13: Left Arrow 16x16 (1, 335, 16, 16)
-	SpriteFrame(-8, -8, 16, 16, 1, 335)
+	SpriteFrame(0, -7, 7, 16, 280, 2)
 	// 14: Right Arrow 16x16 (18, 335, 16, 16)
-	SpriteFrame(-8, -8, 16, 16, 18, 335)
-	// 15: D. A. GARDEN unselected (0, 656, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 0, 656)
-	// 16: D. A. GARDEN selected (128, 656, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 128, 656)
-	// 17: MODO VISUAL unselected (0, 673, 125, 16)
+	SpriteFrame(0, -7, 7, 16, 288, 2)
+	// 15: D. A. GARDEN unselected (0, 673, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 0, 673)
-	// 18: MODO VISUAL selected (128, 673, 125, 16)
+	// 16: D. A. GARDEN selected (128, 673, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 128, 673)
-	// 19: PRUEBA DE SONIDO unselected (0, 690, 125, 16)
+	// 17: MODO VISUAL unselected (0, 690, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 0, 690)
-	// 20: PRUEBA DE SONIDO selected (128, 690, 125, 16)
+	// 18: MODO VISUAL selected (128, 690, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 128, 690)
-	// 21: SELECCIONAR FASE unselected (0, 707, 125, 16)
+	// 19: PRUEBA DE SONIDO unselected (0, 707, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 0, 707)
-	// 22: SELECCIONAR FASE selected (128, 707, 125, 16)
+	// 20: PRUEBA DE SONIDO selected (128, 707, 125, 16)
 	SpriteFrame(-62, -8, 125, 16, 128, 707)
+	// 21: SELECCIONAR FASE unselected (0, 724, 125, 16)
+	SpriteFrame(-62, -8, 125, 16, 0, 724)
+	// 22: SELECCIONAR FASE selected (128, 724, 125, 16)
+	SpriteFrame(-62, -8, 125, 16, 128, 724)
 	// 23: Header EXTRAS (258, 743, 160, 30)
 	SpriteFrame(-80, -15, 160, 30, 258, 743)
 	// 24: Header BANDAS SONORAS (258, 774, 180, 30)
@@ -1152,7 +1159,7 @@ event ObjectStartup
 	// 44: Panel Background 256x160 (1, 743, 256, 160)
 	SpriteFrame(-128, -80, 256, 160, 1, 743)
 	// 45: Dark Grey Selection Frame 250x37 (4, 904, 250, 37)
-	SpriteFrame(-125, -18, 250, 37, 4, 904)
+	SpriteFrame(-126, -18, 250, 37, 4, 904)
 	// 46: Eggman DJ Frame 1 (2, 984, 40, 40)
 	SpriteFrame(-20, -20, 40, 40, 2, 984)
 	// 47: Music Note 1 (43, 986, 4, 12)
