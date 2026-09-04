@@ -506,7 +506,7 @@ event ObjectUpdate
 					object.value3 = 1
 					PlaySfx(SfxName[Menu Button], 0)
 				else
-					if object.value3 == 4
+					if object.value3 < 4
 						object.value3 = 2
 						PlaySfx(SfxName[Menu Button], 0)
 					end if
@@ -920,39 +920,64 @@ event ObjectDraw
 		temp2 = temp0
 		temp2 += 110
 
+		// Gear X position inside panel (left side)
+		temp3 = temp0
+		temp3 -= 92
+
+		// Orange Triangle X position inside panel (between gear and text)
+		temp4 = temp0
+		temp4 -= 65
+
+		// Option Text X position inside panel (shifted right)
+		temp5 = temp0
+		temp5 += 10
+
 		// Draw 256x160 panel background
 		DrawSpriteScreenXY(44, temp0, 120)
 
 		// Draw Header EXTRAS at bottom left
 		DrawSpriteScreenXY(23, temp1, 215)
 
+		// Draw Gears & Orange Triangles on all 4 option rows inside the panel
+		DrawSpriteScreenXY(52, temp3, 62)
+		DrawSpriteScreenXY(53, temp4, 62)
+
+		DrawSpriteScreenXY(52, temp3, 98)
+		DrawSpriteScreenXY(53, temp4, 98)
+
+		DrawSpriteScreenXY(52, temp3, 134)
+		DrawSpriteScreenXY(53, temp4, 134)
+
+		DrawSpriteScreenXY(52, temp3, 170)
+		DrawSpriteScreenXY(53, temp4, 170)
+
 		// Draw 4 options (Selected option has dark grey frame 45 and yellow text! Unselected has white text!)
 		if object.value2 == 0
 			DrawSpriteScreenXY(45, temp0, 62)
-			DrawSpriteScreenXY(16, temp0, 62) // D. A. GARDEN (yellow)
+			DrawSpriteScreenXY(16, temp5, 62) // D. A. GARDEN (yellow)
 		else
-			DrawSpriteScreenXY(15, temp0, 62) // D. A. GARDEN (white)
+			DrawSpriteScreenXY(15, temp5, 62) // D. A. GARDEN (white)
 		end if
 
 		if object.value2 == 1
 			DrawSpriteScreenXY(45, temp0, 98)
-			DrawSpriteScreenXY(18, temp0, 98) // MODO VISUAL (yellow)
+			DrawSpriteScreenXY(18, temp5, 98) // MODO VISUAL (yellow)
 		else
-			DrawSpriteScreenXY(17, temp0, 98) // MODO VISUAL (white)
+			DrawSpriteScreenXY(17, temp5, 98) // MODO VISUAL (white)
 		end if
 
 		if object.value2 == 2
 			DrawSpriteScreenXY(45, temp0, 134)
-			DrawSpriteScreenXY(20, temp0, 134) // PRUEBA DE SONIDO (yellow)
+			DrawSpriteScreenXY(20, temp5, 134) // PRUEBA DE SONIDO (yellow)
 		else
-			DrawSpriteScreenXY(19, temp0, 134) // PRUEBA DE SONIDO (white)
+			DrawSpriteScreenXY(19, temp5, 134) // PRUEBA DE SONIDO (white)
 		end if
 
 		if object.value2 == 3
 			DrawSpriteScreenXY(45, temp0, 170)
-			DrawSpriteScreenXY(22, temp0, 170) // SELECCIONAR FASE (yellow)
+			DrawSpriteScreenXY(22, temp5, 170) // SELECCIONAR FASE (yellow)
 		else
-			DrawSpriteScreenXY(21, temp0, 170) // SELECCIONAR FASE (white)
+			DrawSpriteScreenXY(21, temp5, 170) // SELECCIONAR FASE (white)
 		end if
 
 		// Draw ATRÁS Button at bottom right
@@ -1172,6 +1197,11 @@ event ObjectStartup
 	SpriteFrame(-2, -6, 4, 12, 55, 990)
 	// 51: Double Music Note 4 (62, 986, 10, 12)
 	SpriteFrame(-5, -6, 10, 12, 62, 986)
+
+	// 52: Gear Icon 32x31 (222, 943, 32, 31)
+	SpriteFrame(-16, -15, 32, 31, 222, 943)
+	// 53: Orange Triangle Arrow 12x12 (222, 975, 12, 12)
+	SpriteFrame(-6, -6, 12, 12, 222, 975)
 
 	options.touchControls = false
 end event
