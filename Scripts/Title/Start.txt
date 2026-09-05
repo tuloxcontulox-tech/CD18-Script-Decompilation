@@ -45,6 +45,7 @@ private alias 11 : MENU_SOUNDTRACK
 private alias 12 : MENU_EXTRAS
 private alias 13 : MENU_VISUALMODE
 private alias 14 : MENU_EXIT
+private alias 15 : MENU_TIMEATTACK
 
 
 
@@ -333,17 +334,22 @@ event ObjectUpdate
 					StopMusic()
 					break
 				case 1
-					stage.activeList = PRESENTATION_STAGE
-					stage.listPos = 2
-					LoadStage()
+					// CONTRARRELOJ
+					object.state = MENU_TIMEATTACK
+					screen.fade = 0
+					StopMusic()
 					break
 				case 2
 					object.state = MENU_SOUNDTRACK
 					object.value2 = 0
+					object.value4 = 0 // phase 0: 1.0s delay
+					object.value5 = 0 // timer
 					break
 				case 3
 					object.state = MENU_EXTRAS
 					object.value2 = 0
+					object.value4 = 0 // phase 0: 1.0s delay
+					object.value5 = 0 // timer
 					break
 				case 4
 					object.state = MENU_EXIT
@@ -374,234 +380,392 @@ event ObjectUpdate
 		break
 
 	case MENU_SOUNDTRACK
-		if keyPress[0].left == true
-			if object.value2 != 0
-				object.value2 = 0
-				PlaySfx(SfxName[Menu Button], 0)
+		switch object.value4
+		case 0 // Phase 0: 1-second delay before opening panel
+			object.value5++
+			if object.value5 >= 60
+				object.value4 = 1
+				object.value5 = 0
 			end if
-		end if
-		if keyPress[0].right == true
-			if object.value2 != 1
-				object.value2 = 1
-				PlaySfx(SfxName[Menu Button], 0)
+			break
+		case 1 // Phase 1: Panel scaling up in 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 2
+				object.value5 = 0
 			end if
-		end if
-		if keyPress[0].up == true
-			if object.value2 == 2
-				object.value2 = options.soundtrack
-				PlaySfx(SfxName[Menu Button], 0)
+			break
+		case 2 // Phase 2: Options fading in over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 3 // Active state
+				object.value5 = 0
 			end if
-		end if
-		if keyPress[0].down == true
-			if object.value2 != 2
-				object.value2 = 2
-				PlaySfx(SfxName[Menu Button], 0)
+			break
+		case 3 // Active interactive menu state
+			if keyPress[0].left == true
+				if object.value2 != 0
+					object.value2 = 0
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
 			end if
-		end if
-		if keyPress[0].buttonB == true
-			PlaySfx(SfxName[Back Button], 0)
-			object.state = MENU_MAIN
-		end if
-		checkResult = false
-		if keyPress[0].start == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonA == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonC == true
-			checkResult = true
-		end if
-		if checkResult == true
-			if object.value2 == 0
-				options.soundtrack = 0
-				saveRAM[38] = options.soundtrack
-				WriteSaveRAM()
-				PlaySfx(SfxName[Select], 0)
-				PlayMusic(options.soundtrack)
-			else
-				if object.value2 == 1
-					options.soundtrack = 1
+			if keyPress[0].right == true
+				if object.value2 != 1
+					object.value2 = 1
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
+			end if
+			if keyPress[0].up == true
+				if object.value2 == 2
+					object.value2 = options.soundtrack
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
+			end if
+			if keyPress[0].down == true
+				if object.value2 != 2
+					object.value2 = 2
+					PlaySfx(SfxName[Menu Button], 0)
+				end if
+			end if
+			if keyPress[0].buttonB == true
+				PlaySfx(SfxName[Back Button], 0)
+				object.value4 = 4 // Phase 4: Exit options fade out
+				object.value5 = 0
+			end if
+			checkResult = false
+			if keyPress[0].start == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonA == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonC == true
+				checkResult = true
+			end if
+			if checkResult == true
+				if object.value2 == 0
+					options.soundtrack = 0
 					saveRAM[38] = options.soundtrack
 					WriteSaveRAM()
 					PlaySfx(SfxName[Select], 0)
 					PlayMusic(options.soundtrack)
 				else
-					PlaySfx(SfxName[Back Button], 0)
-					object.state = MENU_MAIN
+					if object.value2 == 1
+						options.soundtrack = 1
+						saveRAM[38] = options.soundtrack
+						WriteSaveRAM()
+						PlaySfx(SfxName[Select], 0)
+						PlayMusic(options.soundtrack)
+					else
+						PlaySfx(SfxName[Back Button], 0)
+						object.value4 = 4 // Exit options fade out
+						object.value5 = 0
+					end if
 				end if
 			end if
-		end if
-		break
-	case MENU_EXTRAS
-		if keyPress[0].up == true
-			object.value2--
-			if object.value2 < 0
-				object.value2 = 4
+			break
+		case 4 // Phase 4: Options fading out over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 5
+				object.value5 = 0
 			end if
-			PlaySfx(SfxName[Menu Button], 0)
-		end if
-		if keyPress[0].down == true
-			object.value2++
-			if object.value2 > 4
-				object.value2 = 0
-			end if
-			PlaySfx(SfxName[Menu Button], 0)
-		end if
-		if keyPress[0].buttonB == true
-			PlaySfx(SfxName[Back Button], 0)
-			object.state = MENU_MAIN
-		end if
-		checkResult = false
-		if keyPress[0].start == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonA == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonC == true
-			checkResult = true
-		end if
-		if checkResult == true
-			PlaySfx(SfxName[Select], 0)
-			switch object.value2
-			case 0
-				// D.A. GARDEN
-				stage.activeList = PRESENTATION_STAGE
-				stage.listPos = 5
-				LoadStage()
-				break
-			case 1
-				// MODO VISUAL
-				object.state = MENU_VISUALMODE
-				object.value3 = 0
-				break
-			case 2
-				// PRUEBA DE SONIDO
-				stage.activeList = PRESENTATION_STAGE
-				stage.listPos = 4
-				LoadStage()
-				break
-			case 3
-				// SELECCIONAR FASE
-				stage.activeList = PRESENTATION_STAGE
-				stage.listPos = 3
-				LoadStage()
-				break
-			case 4
-				// ATRÁS
-				PlaySfx(SfxName[Back Button], 0)
+			break
+		case 5 // Phase 5: Panel scaling down over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
 				object.state = MENU_MAIN
-				break
-			end switch
-		end if
+			end if
+			break
+		end switch
 		break
-	case MENU_VISUALMODE
-		if keyPress[0].up == true
-			if object.value3 == 2
-				object.value3 = 0
+
+	case MENU_EXTRAS
+		switch object.value4
+		case 0 // Phase 0: 1-second delay before opening panel
+			object.value5++
+			if object.value5 >= 60
+				object.value4 = 1
+				object.value5 = 0
+			end if
+			break
+		case 1 // Phase 1: Panel scaling up in 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 2
+				object.value5 = 0
+			end if
+			break
+		case 2 // Phase 2: Options fading in over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 3 // Active state
+				object.value5 = 0
+			end if
+			break
+		case 3 // Active interactive menu state
+			if keyPress[0].up == true
+				object.value2--
+				if object.value2 < 0
+					object.value2 = 4
+				end if
 				PlaySfx(SfxName[Menu Button], 0)
-			else
-				if object.value3 == 3
+			end if
+			if keyPress[0].down == true
+				object.value2++
+				if object.value2 > 4
+					object.value2 = 0
+				end if
+				PlaySfx(SfxName[Menu Button], 0)
+			end if
+			if keyPress[0].buttonB == true
+				PlaySfx(SfxName[Back Button], 0)
+				object.value4 = 4 // Exit options fade out
+				object.value5 = 0
+			end if
+			checkResult = false
+			if keyPress[0].start == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonA == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonC == true
+				checkResult = true
+			end if
+			if checkResult == true
+				PlaySfx(SfxName[Select], 0)
+				switch object.value2
+				case 0
+					// D.A. GARDEN
+					object.state = START_DAGARDEN
+					screen.fade = 0
+					StopMusic()
+					break
+				case 1
+					// MODO VISUAL
+					object.state = MENU_VISUALMODE
+					object.value3 = 0
+					object.value4 = 0 // phase 0 delay
+					object.value5 = 0 // timer
+					break
+				case 2
+					// PRUEBA DE SONIDO
+					object.state = START_SOUNDTEST
+					screen.fade = 0
+					StopMusic()
+					break
+				case 3
+					// SELECCIONAR FASE
+					object.state = START_STAGESELECT
+					screen.fade = 0
+					StopMusic()
+					break
+				case 4
+					// ATRÁS
+					PlaySfx(SfxName[Back Button], 0)
+					object.value4 = 4 // Exit options fade out
+					object.value5 = 0
+					break
+				end switch
+			end if
+			break
+		case 4 // Phase 4: Options fading out over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 5
+				object.value5 = 0
+			end if
+			break
+		case 5 // Phase 5: Panel scaling down over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.state = MENU_MAIN
+			end if
+			break
+		end switch
+		break
+
+	case MENU_VISUALMODE
+		switch object.value4
+		case 0 // Phase 0: 1-second delay before opening panel
+			object.value5++
+			if object.value5 >= 60
+				object.value4 = 1
+				object.value5 = 0
+			end if
+			break
+		case 1 // Phase 1: Panel scaling up in 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 2
+				object.value5 = 0
+			end if
+			break
+		case 2 // Phase 2: Options fading in over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 3 // Active state
+				object.value5 = 0
+			end if
+			break
+		case 3 // Active interactive menu state
+			if keyPress[0].up == true
+				if object.value3 == 2
+					object.value3 = 0
+					PlaySfx(SfxName[Menu Button], 0)
+				else
+					if object.value3 == 3
+						object.value3 = 1
+						PlaySfx(SfxName[Menu Button], 0)
+					else
+						if object.value3 == 4
+							object.value3 = 2
+							PlaySfx(SfxName[Menu Button], 0)
+						end if
+					end if
+				end if
+			end if
+			if keyPress[0].down == true
+				if object.value3 == 0
+					object.value3 = 2
+					PlaySfx(SfxName[Menu Button], 0)
+				else
+					if object.value3 == 1
+						object.value3 = 3
+						PlaySfx(SfxName[Menu Button], 0)
+					else
+						if object.value3 == 2
+							object.value3 = 4
+							PlaySfx(SfxName[Menu Button], 0)
+						else
+							if object.value3 == 3
+								object.value3 = 4
+								PlaySfx(SfxName[Menu Button], 0)
+							else
+								if object.value3 == 4
+									object.value3 = 0
+									PlaySfx(SfxName[Menu Button], 0)
+								end if
+							end if
+						end if
+					end if
+				end if
+			end if
+			if keyPress[0].left == true
+				if object.value3 == 1
+					object.value3 = 0
+					PlaySfx(SfxName[Menu Button], 0)
+				else
+					if object.value3 == 3
+						object.value3 = 2
+						PlaySfx(SfxName[Menu Button], 0)
+					else
+						if object.value3 == 4
+							object.value3 = 2
+							PlaySfx(SfxName[Menu Button], 0)
+						end if
+					end if
+				end if
+			end if
+			if keyPress[0].right == true
+				if object.value3 == 0
 					object.value3 = 1
 					PlaySfx(SfxName[Menu Button], 0)
 				else
-					if object.value3 < 4
-						object.value3 = 2
-						PlaySfx(SfxName[Menu Button], 0)
-					end if
-				end if
-			end if
-		end if
-		if keyPress[0].down == true
-			if object.value3 == 0
-				object.value3 = 2
-				PlaySfx(SfxName[Menu Button], 0)
-			else
-				if object.value3 == 1
-					object.value3 = 3
-					PlaySfx(SfxName[Menu Button], 0)
-				else
-					if object.value3 < 4
-						object.value3 = 4
-						PlaySfx(SfxName[Menu Button], 0)
-					end if
-				end if
-			end if
-		end if
-		if keyPress[0].left == true
-			if object.value3 == 1
-				object.value3 = 0
-				PlaySfx(SfxName[Menu Button], 0)
-			else
-				if object.value3 == 3
-					object.value3 = 2
-					PlaySfx(SfxName[Menu Button], 0)
-				end if
-			end if
-		end if
-		if keyPress[0].right == true
-			if object.value3 == 0
-				object.value3 = 1
-				PlaySfx(SfxName[Menu Button], 0)
-			else
-				if object.value3 == 2
-					object.value3 = 3
-					PlaySfx(SfxName[Menu Button], 0)
-				end if
-			end if
-		end if
-		if keyPress[0].buttonB == true
-			PlaySfx(SfxName[Back Button], 0)
-			object.state = MENU_EXTRAS
-		end if
-		checkResult = false
-		if keyPress[0].start == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonA == true
-			checkResult = true
-		end if
-		if keyPress[0].buttonC == true
-			checkResult = true
-		end if
-		if checkResult == true
-			if object.value3 == 0
-				PlaySfx(SfxName[Select], 0)
-				if options.soundtrack == 0
-					CallNativeFunction2(PlayVideo, "Opening", 0)
-				else
-					CallNativeFunction2(PlayVideo, "OpeningUS", 0)
-				end if
-			else
-				if object.value3 == 1
-					PlaySfx(SfxName[Select], 0)
-					CallNativeFunction2(PlayVideo, "PencilTest", 0)
-				else
 					if object.value3 == 2
-						PlaySfx(SfxName[Select], 0)
-						if options.soundtrack == 0
-							CallNativeFunction2(PlayVideo, "GoodEnding", 0)
-						else
-							CallNativeFunction2(PlayVideo, "GoodEndingUS", 0)
-						end if
+						object.value3 = 3
+						PlaySfx(SfxName[Menu Button], 0)
 					else
-						if object.value3 == 3
+						if object.value3 == 4
+							object.value3 = 3
+							PlaySfx(SfxName[Menu Button], 0)
+						end if
+					end if
+				end if
+			end if
+			if keyPress[0].buttonB == true
+				PlaySfx(SfxName[Back Button], 0)
+				object.value4 = 4 // Exit options fade out
+				object.value5 = 0
+			end if
+			checkResult = false
+			if keyPress[0].start == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonA == true
+				checkResult = true
+			end if
+			if keyPress[0].buttonC == true
+				checkResult = true
+			end if
+			if checkResult == true
+				if object.value3 == 0
+					PlaySfx(SfxName[Select], 0)
+					if options.soundtrack == 0
+						CallNativeFunction2(PlayVideo, "Opening", 0)
+					else
+						CallNativeFunction2(PlayVideo, "OpeningUS", 0)
+					end if
+				else
+					if object.value3 == 1
+						PlaySfx(SfxName[Select], 0)
+						CallNativeFunction2(PlayVideo, "PencilTest", 0)
+					else
+						if object.value3 == 2
 							PlaySfx(SfxName[Select], 0)
 							if options.soundtrack == 0
-								CallNativeFunction2(PlayVideo, "BadEnding", 0)
+								CallNativeFunction2(PlayVideo, "GoodEnding", 0)
 							else
-								CallNativeFunction2(PlayVideo, "BadEndingUS", 0)
+								CallNativeFunction2(PlayVideo, "GoodEndingUS", 0)
 							end if
 						else
-							PlaySfx(SfxName[Back Button], 0)
-							object.state = MENU_EXTRAS
+							if object.value3 == 3
+								PlaySfx(SfxName[Select], 0)
+								if options.soundtrack == 0
+									CallNativeFunction2(PlayVideo, "BadEnding", 0)
+								else
+									CallNativeFunction2(PlayVideo, "BadEndingUS", 0)
+								end if
+							else
+								PlaySfx(SfxName[Back Button], 0)
+								object.value4 = 4 // Exit options fade out
+								object.value5 = 0
+							end if
 						end if
 					end if
 				end if
 			end if
+			break
+		case 4 // Phase 4: Options fading out over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.value4 = 5
+				object.value5 = 0
+			end if
+			break
+		case 5 // Phase 5: Panel scaling down over 0.5 seconds (30 frames)
+			object.value5++
+			if object.value5 >= 30
+				object.state = MENU_EXTRAS
+				object.value4 = 3 // Active in EXTRAS
+			end if
+			break
+		end switch
+		break
+
+	case MENU_TIMEATTACK
+		screen.fade += 4
+		if screen.fade >= 255
+			SetScreenFade(0, 0, 0, 255)
+			stage.activeList = PRESENTATION_STAGE
+			stage.listPos = 2
+			LoadStage()
+		else
+			SetScreenFade(0, 0, 0, screen.fade)
 		end if
 		break
+
 	case START_NEWGAME
 		screen.fade += 4
 		if screen.fade == 384
@@ -622,30 +786,39 @@ event ObjectUpdate
 		break
 	case START_STAGESELECT
 		screen.fade += 4
-		if screen.fade == 384
+		if screen.fade >= 255
+			SetScreenFade(0, 0, 0, 255)
 			options.gameMode 	= 0
+			stage.activeList 	= PRESENTATION_STAGE
 			stage.listPos 		= 3
 			LoadStage()
+		else
+			SetScreenFade(0, 0, 0, screen.fade)
 		end if
-		SetScreenFade(0, 0, 0, screen.fade)
 		break
 	case START_SOUNDTEST
 		screen.fade += 4
-		if screen.fade == 384
+		if screen.fade >= 255
+			SetScreenFade(0, 0, 0, 255)
 			options.gameMode 	= 0
+			stage.activeList 	= PRESENTATION_STAGE
 			stage.listPos 		= 4
 			LoadStage()
+		else
+			SetScreenFade(0, 0, 0, screen.fade)
 		end if
-		SetScreenFade(0, 0, 0, screen.fade)
 		break
 	case START_DAGARDEN
 		screen.fade += 4
-		if screen.fade == 384
+		if screen.fade >= 255
+			SetScreenFade(0, 0, 0, 255)
 			options.gameMode 	= 0
+			stage.activeList 	= PRESENTATION_STAGE
 			stage.listPos 		= 5
 			LoadStage()
+		else
+			SetScreenFade(0, 0, 0, screen.fade)
 		end if
-		SetScreenFade(0, 0, 0, screen.fade)
 		break
 	case START_DEMO
 		screen.fade += 4
@@ -845,8 +1018,51 @@ event ObjectDraw
 		temp4 = temp0
 		temp4 += 110
 
-		// Draw 256x160 panel background
+		if object.value4 == 0
+			// Phase 0: 1.0s delay, nothing drawn
+			break
+		end if
+
+		if object.value4 == 1
+			// Phase 1: Panel scaling up from tiny to normal size (0.5s = 30 frames)
+			object.scale = object.value5
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		if object.value4 == 5
+			// Phase 5: Panel scaling down from normal size to tiny (0.5s = 30 frames)
+			temp7 = 30
+			temp7 -= object.value5
+			object.scale = temp7
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		// Phases 2, 3, 4: Panel drawn at full size
 		DrawSpriteScreenXY(44, temp0, 120)
+
+		// Check options visibility (Phase 2 fading in, Phase 4 fading out)
+		if object.value4 == 2
+			// Fading in: object.value5 / 30
+			// Alternate frames to simulate opacity fade
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 0
+				break
+			end if
+		end if
+
+		if object.value4 == 4
+			// Fading out
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 1
+				break
+			end if
+		end if
 
 		// Draw Header BANDAS SONORAS at bottom left
 		DrawSpriteScreenXY(24, temp1, 215)
@@ -932,8 +1148,50 @@ event ObjectDraw
 		temp5 = temp0
 		temp5 += 10
 
-		// Draw 256x160 panel background
+		if object.value4 == 0
+			// Phase 0: 1.0s delay, nothing drawn
+			break
+		end if
+
+		if object.value4 == 1
+			// Phase 1: Panel scaling up from tiny to normal size (0.5s = 30 frames)
+			object.scale = object.value5
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		if object.value4 == 5
+			// Phase 5: Panel scaling down from normal size to tiny (0.5s = 30 frames)
+			temp7 = 30
+			temp7 -= object.value5
+			object.scale = temp7
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		// Phases 2, 3, 4: Panel drawn at full size
 		DrawSpriteScreenXY(44, temp0, 120)
+
+		// Check options visibility (Phase 2 fading in, Phase 4 fading out)
+		if object.value4 == 2
+			// Fading in: object.value5 / 30
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 0
+				break
+			end if
+		end if
+
+		if object.value4 == 4
+			// Fading out
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 1
+				break
+			end if
+		end if
 
 		// Draw Header EXTRAS at bottom left
 		DrawSpriteScreenXY(23, temp1, 215)
@@ -998,8 +1256,50 @@ event ObjectDraw
 		temp4 = temp0
 		temp4 += 110
 
-		// Draw 256x160 panel background
+		if object.value4 == 0
+			// Phase 0: 1.0s delay, nothing drawn
+			break
+		end if
+
+		if object.value4 == 1
+			// Phase 1: Panel scaling up from tiny to normal size (0.5s = 30 frames)
+			object.scale = object.value5
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		if object.value4 == 5
+			// Phase 5: Panel scaling down from normal size to tiny (0.5s = 30 frames)
+			temp7 = 30
+			temp7 -= object.value5
+			object.scale = temp7
+			object.scale *= 17
+			DrawSpriteScreenFX(44, FX_SCALE, temp0, 120)
+			break
+		end if
+
+		// Phases 2, 3, 4: Panel drawn at full size
 		DrawSpriteScreenXY(44, temp0, 120)
+
+		// Check options visibility (Phase 2 fading in, Phase 4 fading out)
+		if object.value4 == 2
+			// Fading in: object.value5 / 30
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 0
+				break
+			end if
+		end if
+
+		if object.value4 == 4
+			// Fading out
+			temp7 = object.value5
+			temp7 &= 1
+			if temp7 == 1
+				break
+			end if
+		end if
 
 		// Draw Header EXTRAS at bottom left
 		DrawSpriteScreenXY(23, temp1, 215)
@@ -1123,21 +1423,21 @@ event ObjectStartup
 	// 14: Right Arrow 16x16 (18, 335, 16, 16)
 	SpriteFrame(0, -7, 7, 16, 288, 2)
 	// 15: D. A. GARDEN unselected (0, 673, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 0, 673)
+	SpriteFrame(-62, -16, 125, 16, 0, 673)
 	// 16: D. A. GARDEN selected (128, 673, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 128, 673)
+	SpriteFrame(-62, -16, 125, 16, 128, 673)
 	// 17: MODO VISUAL unselected (0, 690, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 0, 690)
+	SpriteFrame(-62, -16, 125, 16, 0, 690)
 	// 18: MODO VISUAL selected (128, 690, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 128, 690)
+	SpriteFrame(-62, -16, 125, 16, 128, 690)
 	// 19: PRUEBA DE SONIDO unselected (0, 707, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 0, 707)
+	SpriteFrame(-62, -16, 125, 16, 0, 707)
 	// 20: PRUEBA DE SONIDO selected (128, 707, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 128, 707)
+	SpriteFrame(-62, -16, 125, 16, 128, 707)
 	// 21: SELECCIONAR FASE unselected (0, 724, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 0, 724)
+	SpriteFrame(-62, -16, 125, 16, 0, 724)
 	// 22: SELECCIONAR FASE selected (128, 724, 125, 16)
-	SpriteFrame(-62, -8, 125, 16, 128, 724)
+	SpriteFrame(-62, -16, 125, 16, 128, 724)
 	// 23: Header EXTRAS (258, 743, 160, 30)
 	SpriteFrame(-80, -15, 160, 30, 258, 743)
 	// 24: Header BANDAS SONORAS (258, 774, 180, 30)
@@ -1153,38 +1453,38 @@ event ObjectStartup
 	// 29: US Inactive Red (108, 942, 64, 21)
 	SpriteFrame(-32, -10, 64, 21, 108, 942)
 	// 30: ATRAS Inactive (254, 920, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 254, 920)
+	SpriteFrame(24, -14, 64, 24, 255, 920)
 	// 31: ATRAS Active (254, 945, 62, 24)
-	SpriteFrame(-31, -12, 62, 24, 254, 945)
+	SpriteFrame(24, -14, 64, 24, 255, 945)
 	// 32: Comienzo Thumb (261, 825, 36, 36)
-	SpriteFrame(-18, -18, 36, 36, 261, 825)
+	SpriteFrame(-18, -18, 36, 36, 258, 805)
 	// 33: Pencil Test Thumb (389, 825, 36, 36)
-	SpriteFrame(-18, -18, 36, 36, 389, 825)
+	SpriteFrame(-18, -18, 36, 36, 351, 805)
 	// 34: Good Ending Thumb (261, 871, 36, 36)
-	SpriteFrame(-18, -18, 36, 36, 261, 871)
+	SpriteFrame(-18, -18, 36, 36, 258, 842)
 	// 35: Bad Ending Thumb (389, 871, 36, 36)
-	SpriteFrame(-18, -18, 36, 36, 389, 871)
+	SpriteFrame(-18, -18, 36, 36, 351, 842)
 	// 36: Comienzo Label Inactive (298, 825, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 298, 825)
+	SpriteFrame(-23, 1, 46, 8, 296, 805)
 	// 37: Comienzo Label Active (298, 842, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 298, 842)
+	SpriteFrame(-23, 1, 46, 8, 296, 814)
 	// 38: Pencil Test Label Inactive (426, 825, 85, 16)
-	SpriteFrame(-42, -8, 85, 16, 426, 825)
+	SpriteFrame(-43, 1, 89, 8, 389, 805)
 	// 39: Pencil Test Label Active (426, 842, 85, 16)
-	SpriteFrame(-42, -8, 85, 16, 426, 842)
+	SpriteFrame(-43, 1, 89, 8, 389, 814)
 	// 40: Good Ending Label Inactive (298, 871, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 298, 871)
+	SpriteFrame(-26, 1, 52, 8, 296, 842)
 	// 41: Good Ending Label Active (298, 888, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 298, 888)
+	SpriteFrame(-26, 1, 52, 8, 296, 851)
 	// 42: Bad Ending Label Inactive (426, 871, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 426, 871)
+	SpriteFrame(-22, 1, 47, 8, 389, 842)
 	// 43: Bad Ending Label Active (426, 888, 62, 16)
-	SpriteFrame(-31, -8, 62, 16, 426, 888)
+	SpriteFrame(-22, 1, 47, 8, 389, 851)
 
 	// 44: Panel Background 256x160 (1, 743, 256, 160)
-	SpriteFrame(-128, -80, 256, 160, 1, 743)
+	SpriteFrame(-128, -88, 256, 160, 1, 743)
 	// 45: Dark Grey Selection Frame 250x37 (4, 904, 250, 37)
-	SpriteFrame(-126, -18, 250, 37, 4, 904)
+	SpriteFrame(-126, -26, 250, 37, 4, 904)
 	// 46: Eggman DJ Frame 1 (2, 984, 40, 40)
 	SpriteFrame(-20, -20, 40, 40, 2, 984)
 	// 47: Music Note 1 (43, 986, 4, 12)
@@ -1199,9 +1499,9 @@ event ObjectStartup
 	SpriteFrame(-5, -6, 10, 12, 62, 986)
 
 	// 52: Gear Icon 32x31 (222, 943, 32, 31)
-	SpriteFrame(-16, -15, 32, 31, 222, 943)
+	SpriteFrame(-30, -23, 32, 31, 222, 943)
 	// 53: Orange Triangle Arrow 12x12 (222, 975, 12, 12)
-	SpriteFrame(-6, -6, 12, 12, 222, 975)
+	SpriteFrame(-16, -18, 13, 16, 222, 974)
 
 	options.touchControls = false
 end event
