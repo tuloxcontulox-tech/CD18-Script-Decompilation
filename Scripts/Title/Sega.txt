@@ -18,12 +18,21 @@ public alias arrayPos7 : playerCount
 event ObjectUpdate
 	switch object.state
 	case 0
-		object.state = 1
-		object.value0 = 480
-		object.alpha = 256
-		object.inkEffect = 2
-		SetScreenFade(0, 0, 0, 255)
-		object.ixpos = screen.xcenter
+		if options.attractMode == 2
+			options.attractMode = 0
+			ResetObjectEntity(object.entityPos, TypeName[Sonic], 0, object.xpos, object.ypos)
+			object.inkEffect = 2
+			object.alpha = 0
+			object.value0 = 0
+			object.value3 = 96
+		else
+			object.state = 1
+			object.value0 = 480
+			object.alpha = 256
+			object.inkEffect = 2
+			SetScreenFade(0, 0, 0, 255)
+			object.ixpos = screen.xcenter
+		end if
 		break
 	case 1
 		if object.value0 > 0
