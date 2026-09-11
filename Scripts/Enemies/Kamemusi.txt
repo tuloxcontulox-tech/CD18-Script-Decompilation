@@ -135,7 +135,6 @@ event ObjectDraw
     else
         temp0 = object.frame
         temp0 /= 6
-        temp0 += 2
         DrawSpriteFX(temp0, FX_FLIP, object.xpos, object.ypos)
     end if
 end event
