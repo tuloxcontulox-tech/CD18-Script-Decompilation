@@ -22,7 +22,7 @@ public function Generator_DebugDraw
     DrawSprite(4)
     DrawSprite(8)
     DrawSprite(12)
-    DrawSpriteFX(0, FX_FLIP, object.xpos, object.ypos)
+    DrawSprite(17)
     object.direction = temp0
 end function
 
@@ -141,6 +141,7 @@ event ObjectDraw
             DrawSprite(temp0)
             temp0 += 4
             DrawSprite(temp0)
+            DrawSprite(17)
             object.value0++
             if object.value0 > 3
                 object.value0 = 0
@@ -202,7 +203,7 @@ event ObjectStartup
     SpriteFrame(10, -8, 12, 16, 149, 18)
     SpriteFrame(10, -8, 12, 16, 162, 18)
     SpriteFrame(-40, 16, 80, 16, 175, 44)
-    SpriteFrame(-40, -32, 80, 25, 175, 18)
+    SpriteFrame(-40, 0, 80, 25, 175, 18)
     SpriteFrame(-40, 16, 80, 16, 175, 1)
     SetTableValue(TypeName[Generator], DebugMode_ObjCount, DebugMode_TypesTable)
     SetTableValue(Generator_DebugDraw, DebugMode_ObjCount, DebugMode_DrawTable)
